@@ -12,7 +12,7 @@
 ## Требования
 
 - Реализовать функционал в рамках секретного проекта
-- Практировать Event Modeling + BDD + TDD
+- Event Modeling > BDD > Integration/Unit Tests (via gherkingen) > code for development via tests for external API of modules - `package module_test` > Unit Tests Coverage for internal functions in modules (via ChatGPT)
 - standard + evrone/go-clean-template + SOLID + Dependency Injection
 
 ## Применить инфраструктуру (вхождений на hh.ru)
@@ -43,8 +43,14 @@
 - [ ] ~~DeployHQ~~ (132)
 - [ ] GitHub Actions (54)
 
+## Для DevOPS
+
+- [ ] ArgoCD + Helm - Наверное чтобы было понимание как вообще скейлится нагрузка в проде, чтобы не писал монолит которому нужно добавлять CPU только. ​Да не забей, научишься писать helm chart, и выучи что такое deployment/HPA и какие типы service есть. Напиши Helm chart для деплоя приложения в Kubernetes. Тебе нужно отдавать метрики в формате prometheus/тебе нужно иметь endpoint для health check/иметь логи в формате json.
+- [ ] Kubernetes Operations - это Operator SDK for Platform Engineer.
+
 ## Применить либы
 
+- [ ] gherkingen - для BDD
 - [ ] testcontainers-go
 - [ ] bufbuild/buf
 - [ ] golang-migrate/migrate
@@ -58,10 +64,10 @@
 - [ ] jackc/pgx/v5/pgxpool / go-pg + pool - PG Pool
 - [ ] Masterminds/squirrel - SQL Builder (by Avito)
 - [ ] er := errgroup.Group{}; eg.SetLimit(limit) - ещё один примитив синхронизации (golang.org/x/sync/errgroup)
-- [ ] gherkingen - для BDD
 - [ ] [Compile-time Dependency Injection for Go](https://github.com/google/wire)
 - [ ] [Fx is a dependency injection system for Go](https://github.com/uber-go/fx)
 - [ ] https://github.com/uber-go/zap
 - [ ] https://github.com/golangci/golangci-lint
 - [ ] https://github.com/uber-go/config
 - [ ] [Методы организации DI и жизненного цикла приложения в GO](https://habr.com/ru/companies/vivid_money/articles/531822/)
+- [ ] github.com/yonahd/kor@latest - инструмент для обнаружения неиспользуемых ресурсов Kubernetes
