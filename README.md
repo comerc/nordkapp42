@@ -6,7 +6,7 @@
 
 ## Цели
 
-- Каждодневная практика ответов на вопросы, которые спрашивают на собесах
+- Каждодневная практика ответов на вопросы, которые спрашивают на собесах (анти пет-проект)
 - Скрытая цель - "From Zero To Hero", подробности потом
 
 ## Требования
@@ -14,6 +14,7 @@
 - Реализовать функционал в рамках секретного проекта
 - Event Modeling > BDD > Integration/Unit Tests (via gherkingen) > code for development via tests for external API of modules - `package module_test` > Unit Tests Coverage for internal functions in modules (via ChatGPT)
 - standard + evrone/go-clean-template + SOLID + Dependency Injection
+- API на gRPC внутри, ванильный GraphQL наружу
 
 ## Применить инфраструктуру (вхождений на hh.ru)
 
@@ -27,13 +28,16 @@
 - [ ] ~~FileBeat~~ (22)
 - [ ] Prometheus (1138)
 - [ ] ClickHouse (1149)
-- [ ] Kubernetes (2446)
+- [ ] Kubernetes (2446) или Minikube
 - [ ] ~~MongoDB~~ (780)
 - [ ] ~~MySQL~~ (1661)
+- [ ] ~~Greenplum~~ (746)
 - [ ] PostgreSQL (4585)
 - [ ] ~~Airflow~~ (676)
 - [ ] ~~Cadence~~ (69)
 - [ ] Temporal (8)
+- [ ] ~~Nginx~~ (2027)
+- [ ] ~~Haproxy~~ (232)
 - [ ] ~~Traefik~~ (24)
 - [ ] ~~KrakenD~~ (5)
 - [ ] Hasura (3), только как API-Gateway
@@ -71,3 +75,4 @@
 - [ ] https://github.com/uber-go/config
 - [ ] [Методы организации DI и жизненного цикла приложения в GO](https://habr.com/ru/companies/vivid_money/articles/531822/)
 - [ ] github.com/yonahd/kor@latest - инструмент для обнаружения неиспользуемых ресурсов Kubernetes
+- [ ] gorilla/mux
