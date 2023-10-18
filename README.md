@@ -2,7 +2,7 @@
 
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Nordkapp_znad_morza_Barentsa.jpg/1024px-Nordkapp_znad_morza_Barentsa.jpg)
 
-Напоминания по задачам
+Напоминания по задачам для клона Trello
 
 ## Цели
 
@@ -12,7 +12,7 @@
 ## Требования
 
 - Реализовать функционал в рамках секретного проекта
-- Event Modeling > BDD > Integration/Unit Tests (via gherkingen) > code for development via tests for external API of modules - `package module_test` > Unit Tests Coverage for internal functions in modules (via ChatGPT)
+- Event Modeling > BDD > Integration/Unit Tests (via gherkingen) > code for development via tests for external API of modules - `package module_test` / whitebox > Unit Tests Coverage for internal functions in modules `package module` / blackbox (via ChatGPT)
 - standard + evrone/go-clean-template + SOLID + Dependency Injection
 - API на gRPC внутри, ванильный GraphQL наружу
 
@@ -76,3 +76,7 @@
 - [ ] [Методы организации DI и жизненного цикла приложения в GO](https://habr.com/ru/companies/vivid_money/articles/531822/)
 - [ ] github.com/yonahd/kor@latest - инструмент для обнаружения неиспользуемых ресурсов Kubernetes
 - [ ] gorilla/mux
+
+## Реализация
+
+[Event Modeling](https://draft.io/a77sr5g3fhhmq7dyykmu5pzhr7yzvdrrrt5nf3gmsmaw)
