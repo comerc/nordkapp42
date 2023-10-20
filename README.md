@@ -12,7 +12,7 @@
 ## Требования
 
 - Реализовать функционал в рамках секретного проекта
-- Event Modeling > BDD > Integration/Unit Tests (via gherkingen) > code for development via tests for external API of modules - `package module_test` / whitebox > Unit Tests Coverage for internal functions in modules `package module` / blackbox (via ChatGPT)
+- Event Modeling > BDD > Integration/Unit Tests (via gherkingen) > code for development via tests for external API of modules - `package module_test` / whitebox for refactoring > Unit Tests Coverage for internal functions in modules `package module` / blackbox for modifications (via ChatGPT)
 - standard + evrone/go-clean-template + SOLID + Dependency Injection
 - API на gRPC внутри, ванильный GraphQL наружу
 
