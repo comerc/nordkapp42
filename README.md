@@ -58,6 +58,7 @@
 - [ ] testcontainers-go
 - [ ] bufbuild/buf
 - [ ] golang-migrate/migrate
+- [ ] pressly/goose
 - [ ] flaggy | go-flags | pflag
 - [ ] [Лучший regexp для Go](https://habr.com/ru/articles/756222/)
 - [ ] цветные логи: https://github.com/GolangLessons/url-shortener/blob/c3987f66469a8d0769add18521adb9023520be95/internal/lib/logger/handlers/slogpretty/slogpretty.go
@@ -76,6 +77,7 @@
 - [ ] [Методы организации DI и жизненного цикла приложения в GO](https://habr.com/ru/companies/vivid_money/articles/531822/)
 - [ ] github.com/yonahd/kor@latest - инструмент для обнаружения неиспользуемых ресурсов Kubernetes
 - [ ] gorilla/mux
+- [ ] bytedance/sonic
 
 ## Реализация
 
