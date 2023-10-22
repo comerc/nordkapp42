@@ -13,7 +13,7 @@
 
 - Реализовать функционал в рамках секретного проекта
 - Event Modeling > BDD > Integration/Unit Tests (via gherkingen) > code for development via tests for external API of modules - `package module_test` / whitebox for refactoring > Unit Tests Coverage for internal functions in modules `package module` / blackbox for modifications (via ChatGPT)
-- standard + evrone/go-clean-template + SOLID + Dependency Injection
+- standard + [modules/layout](https://go.dev/doc/modules/layout) + evrone/go-clean-template + SOLID + Dependency Injection
 - API на gRPC внутри, ванильный GraphQL наружу
 
 ## Применить инфраструктуру (вхождений на hh.ru)
@@ -76,8 +76,9 @@
 - [ ] https://github.com/uber-go/config
 - [ ] [Методы организации DI и жизненного цикла приложения в GO](https://habr.com/ru/companies/vivid_money/articles/531822/)
 - [ ] github.com/yonahd/kor@latest - инструмент для обнаружения неиспользуемых ресурсов Kubernetes
-- [ ] gorilla/mux
+- [ ] gorilla/mux | stdlib mux 1.22
 - [ ] bytedance/sonic
+- [ ] https://failsafe-go.dev/
 
 ## Реализация
 
