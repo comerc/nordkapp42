@@ -12,7 +12,7 @@
 ## Требования
 
 - Реализовать функционал в рамках секретного проекта
-- Event Modeling > BDD > Integration/Unit Tests (via gherkingen) > code for development via tests for external API of modules - `package module_test` / whitebox for refactoring > Unit Tests Coverage for internal functions in modules `package module` / blackbox for modifications (via ChatGPT)
+- Event Modeling > BDD > Integration/Unit Tests (via gherkingen / goconvey) > code for development via tests for external API of modules - `package module_test` / blackbox for refactoring > Unit Tests Coverage for internal functions in modules `package module` / whitebox for modifications (via ChatGPT)
 - standard + [modules/layout](https://go.dev/doc/modules/layout) + evrone/go-clean-template + SOLID + Dependency Injection
 - API на gRPC внутри, ванильный GraphQL наружу
 
@@ -46,6 +46,9 @@
 - [ ] ~~TeamCity~~ (345)
 - [ ] ~~DeployHQ~~ (132)
 - [ ] GitHub Actions (54)
+- [ ] golangci-lint
+- [ ] goleak от убера умеет показывать какие горутины не померли
+- [ ] uber-go/automaxprocs
 
 ## Для DevOPS
 
@@ -62,7 +65,7 @@
 - [ ] flaggy | go-flags | pflag
 - [ ] [Лучший regexp для Go](https://habr.com/ru/articles/756222/)
 - [ ] цветные логи: https://github.com/GolangLessons/url-shortener/blob/c3987f66469a8d0769add18521adb9023520be95/internal/lib/logger/handlers/slogpretty/slogpretty.go
-- [ ] vegeta, wrk - для стресс-тестов
+- [ ] bombardier, vegeta, wrk - для стресс-тестов
 - [ ] allegro/bigcache - когда нужен просто кеш (рекомендации лучших собаководов из Avito)
 - [ ] go-playground/validator - правильный валидатор
 - [ ] ilyakaznacheev/cleanenv - yaml & env в одном флаконе + godotenv для чтения .env
@@ -71,14 +74,17 @@
 - [ ] er := errgroup.Group{}; eg.SetLimit(limit) - ещё один примитив синхронизации (golang.org/x/sync/errgroup)
 - [ ] [Compile-time Dependency Injection for Go](https://github.com/google/wire)
 - [ ] [Fx is a dependency injection system for Go](https://github.com/uber-go/fx)
-- [ ] https://github.com/uber-go/zap
-- [ ] https://github.com/golangci/golangci-lint
-- [ ] https://github.com/uber-go/config
+- [ ] github.com/uber-go/zap
+- [ ] github.com/golangci/golangci-lint
+- [ ] github.com/uber-go/config
 - [ ] [Методы организации DI и жизненного цикла приложения в GO](https://habr.com/ru/companies/vivid_money/articles/531822/)
 - [ ] github.com/yonahd/kor@latest - инструмент для обнаружения неиспользуемых ресурсов Kubernetes
 - [ ] gorilla/mux | stdlib mux 1.22
 - [ ] bytedance/sonic
-- [ ] https://failsafe-go.dev/
+- [ ] failsafe-go.dev
+- [ ] goconvey - is awesome BDD in Go
+- [ ] github.com/uber-go/mock
+- [ ] github.com/segmentio/kafka-go [Kafka, go и параллельные очереди](https://habr.com/ru/articles/769950/)
 
 ## Реализация
 
