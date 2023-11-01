@@ -50,8 +50,7 @@
 - [ ] goleak от убера умеет показывать какие горутины не померли
 - [ ] uber-go/automaxprocs
 - [ ] Reindexer https://habr.com/ru/articles/346884/
-
-Reindexer - встраиваемая документо-ориентированная СУБД, которая работает с in-memory базами данных и опционально может использовать дисковое хранилище. Основная отличительная особенность reindexer — быстрый поиск по сложным запросам.
+- [ ] Jitsu https://habr.com/ru/companies/jitsu/articles/523464/
 
 ## Для DevOPS
 
