@@ -56,6 +56,7 @@
 
 - [ ] ArgoCD + Helm - Наверное чтобы было понимание как вообще скейлится нагрузка в проде, чтобы не писал монолит которому нужно добавлять CPU только. ​Да не забей, научишься писать helm chart, и выучи что такое deployment/HPA и какие типы service есть. Напиши Helm chart для деплоя приложения в Kubernetes. Тебе нужно отдавать метрики в формате prometheus/тебе нужно иметь endpoint для health check/иметь логи в формате json.
 - [ ] Kubernetes Operations - это Operator SDK for Platform Engineer.
+- [ ] С помощью интеграции GitLab и Google Kubernetes Engine (GKE), вы можете установить GitLab Runners на GKE одним кликом и сразу начать запускать свои конвейеры CI2.
 
 ## Применить либы
 
@@ -67,7 +68,7 @@
 - [ ] flaggy | go-flags | pflag
 - [ ] [Лучший regexp для Go](https://habr.com/ru/articles/756222/)
 - [ ] цветные логи: https://github.com/GolangLessons/url-shortener/blob/c3987f66469a8d0769add18521adb9023520be95/internal/lib/logger/handlers/slogpretty/slogpretty.go
-- [ ] bombardier, vegeta, wrk - для стресс-тестов
+- [ ] codesenberg/bombardier, tsenart/vegeta, grafana/k6, wrk - для стресс-тестов
 - [ ] allegro/bigcache - когда нужен просто кеш (рекомендации лучших собаководов из Avito)
 - [ ] go-playground/validator - правильный валидатор
 - [ ] ilyakaznacheev/cleanenv - yaml & env в одном флаконе + godotenv для чтения .env
@@ -87,6 +88,7 @@
 - [ ] goconvey - is awesome BDD in Go
 - [ ] github.com/uber-go/mock
 - [ ] github.com/segmentio/kafka-go [Kafka, go и параллельные очереди](https://habr.com/ru/articles/769950/)
+- [ ] https://github.com/grpc-ecosystem/grpc-gateway
 
 ## Реализация
 
