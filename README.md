@@ -49,8 +49,11 @@
 - [ ] golangci-lint
 - [ ] goleak от убера умеет показывать какие горутины не померли
 - [ ] uber-go/automaxprocs
+- [ ] uber-go/goleak
 - [ ] Reindexer https://habr.com/ru/articles/346884/
 - [ ] Jitsu https://habr.com/ru/companies/jitsu/articles/523464/
+- [ ] Centrifugo
+- [ ] Livekit.io
 
 ## Для DevOPS
 
@@ -72,6 +75,9 @@
 - [ ] allegro/bigcache - когда нужен просто кеш (рекомендации лучших собаководов из Avito)
 - [ ] go-playground/validator - правильный валидатор
 - [ ] ilyakaznacheev/cleanenv - yaml & env в одном флаконе + godotenv для чтения .env
+- [ ] Netflix/go-env
+- [ ] caarlos0/env
+- [ ] spf13/viper
 - [ ] jackc/pgx/v5/pgxpool / go-pg + pool - PG Pool
 - [ ] Masterminds/squirrel - SQL Builder (by Avito)
 - [ ] er := errgroup.Group{}; eg.SetLimit(limit) - ещё один примитив синхронизации (golang.org/x/sync/errgroup)
@@ -89,7 +95,25 @@
 - [ ] github.com/uber-go/mock
 - [ ] github.com/segmentio/kafka-go [Kafka, go и параллельные очереди](https://habr.com/ru/articles/769950/)
 - [ ] https://github.com/grpc-ecosystem/grpc-gateway
+- [ ] matoous/go-nanoid
+- [ ] https://github.com/bufbuild/buf (вместо protoc для gRPC)
+- [ ] https://github.com/mailhog/MailHog для тестирования почты
+- [ ] https://github.com/IBM/sarama
 
 ## Реализация
 
 [Event Modeling](https://draft.io/a77sr5g3fhhmq7dyykmu5pzhr7yzvdrrrt5nf3gmsmaw)
+
+## How To Start
+
+```bash
+$ brew install golangci-lint
+$ brew install mockery
+$ brew install go-task
+```
+
+## How to build & run
+
+```bash
+$ docker-compose up -d --build
+```

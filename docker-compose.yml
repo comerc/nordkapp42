@@ -1,0 +1,25 @@
+version: '3'
+name: 'try-clean'
+services:
+  clean:
+    build: .
+    ports:
+      - '1323:1323'
+    # depends_on:
+    #   - db
+    environment:
+      - Host=db
+      - Username=postgres
+      - Password=pss123456
+      - DBName=postgres
+  # db:
+  #   restart: always
+  #   image: postgres:13.3
+  #   volumes:
+  #     - ./data/db:/var/lib/postgresql/data
+  #   environment:
+  #     - Username=postgres
+  #     - Password=pss123456
+  #     - DBName=postgres
+  #   ports:
+  #     - "5433:5432"
