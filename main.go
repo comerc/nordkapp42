@@ -1,8 +1,10 @@
 package main
 
-func main() {
-	println("OK")
-	for {
+import "time"
 
+func main() {
+	for {
+		println("OK")
+		time.Sleep(time.Second)
 	}
 }
