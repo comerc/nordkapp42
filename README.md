@@ -47,9 +47,8 @@
 - [ ] ~~DeployHQ~~ (132)
 - [ ] GitHub Actions (54)
 - [ ] golangci-lint
-- [ ] goleak от убера умеет показывать какие горутины не померли
 - [ ] uber-go/automaxprocs
-- [ ] uber-go/goleak
+- [ ] uber-go/goleak - умеет показывать какие горутины не померли
 - [ ] Reindexer https://habr.com/ru/articles/346884/
 - [ ] Jitsu https://habr.com/ru/companies/jitsu/articles/523464/
 - [ ] Centrifugo
