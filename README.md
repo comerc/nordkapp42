@@ -117,7 +117,7 @@ $ brew install go-task
 $ docker-compose up -d --build
 ```
 
-## Требования
+## Верхнеуровневый план
 
 ### Stage 1
 
@@ -128,6 +128,7 @@ $ docker-compose up -d --build
 - Members: и отправляют и читают 
 - Rooms: приватные (1-1) и общие (1-N)
 - Все сообщения хранятся вечно, и могут быть получены в отложенном режиме
+- GraphQL Subscribe
 
 ### Stage 2
 
@@ -153,6 +154,13 @@ $ docker-compose up -d --build
 
 - Temporal
 
+***
 
-
+- https://github.com/acelot/graphql-articles
+- https://altairgraphql.dev/
+- https://habr.com/ru/articles/510448/
+- https://github.com/jaydenseric/graphql-multipart-request-spec
+- https://github.com/vektah/dataloaden
+- https://github.com/99designs/gqlgen
+ 
 
