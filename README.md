@@ -156,6 +156,9 @@ $ docker-compose up -d --build
 
 ***
 
+- https://www.youtube.com/watch?v=tv8muwgj-Y4
+- https://www.youtube.com/watch?v=UP4w70VXKt4
+- https://github.com/nodkz/conf-talks
 - https://github.com/acelot/graphql-articles
 - https://altairgraphql.dev/
 - https://habr.com/ru/articles/510448/
