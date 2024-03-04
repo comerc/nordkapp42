@@ -18,7 +18,7 @@
 
 ## Применить инфраструктуру (вхождений на hh.ru)
 
-- [ ] ~~RabbitMQ~~ (1417)
+- [ ] RabbitMQ (1417)
 - [ ] ~~Redis~~ (1387)
 - [ ] Kafka (2573)
 - [ ] Grafana (1491)
@@ -53,6 +53,7 @@
 - [ ] Jitsu https://habr.com/ru/companies/jitsu/articles/523464/
 - [ ] Centrifugo
 - [ ] Livekit.io
+- [ ] MINIO https://github.com/minio/minio-go
 
 ## Для DevOPS
 
@@ -62,6 +63,7 @@
 
 ## Применить либы
 
+- [ ] [mitchellh/mapstructure](https://github.com/mitchellh/mapstructure) - для мапинга данных GraphQL - [example 1](https://github.com/99designs/gqlgen/blob/master/_examples/todo/todo.go) - [example 2](https://gqlgen.com/reference/changesets/)
 - [ ] gherkingen - для BDD
 - [ ] testcontainers-go
 - [ ] bufbuild/buf
@@ -87,7 +89,7 @@
 - [ ] github.com/uber-go/config
 - [ ] [Методы организации DI и жизненного цикла приложения в GO](https://habr.com/ru/companies/vivid_money/articles/531822/)
 - [ ] github.com/yonahd/kor@latest - инструмент для обнаружения неиспользуемых ресурсов Kubernetes
-- [ ] gorilla/mux | stdlib mux 1.22
+- [ ] gorilla/mux | stdlib mux 1.22 (or fiber?)
 - [ ] bytedance/sonic
 - [ ] failsafe-go.dev
 - [ ] goconvey - is awesome BDD in Go
@@ -98,6 +100,13 @@
 - [ ] https://github.com/bufbuild/buf (вместо protoc для gRPC)
 - [ ] https://github.com/mailhog/MailHog для тестирования почты
 - [ ] https://github.com/IBM/sarama
+- [ ] [настройки CORS](https://habr.com/ru/articles/598359/)
+- [ ] [Boilerplate for Go REST API with PostgreSQL database](https://github.com/comerc/go-api-boilerplate)
+- [ ] [PostGraphile - Instant lightning-fast GraphQL API backed primarily by your PostgreSQL database.](https://github.com/graphile/crystal/tree/main/postgraphile/postgraphile)
+- [ ] [dataloader на дженериках](https://github.com/vikstrous/dataloadgen) - [example](https://github.com/stasundr/gqlgen-pg-todo-example)
+- [ ] [bun - SQL-first Golang ORM](https://github.com/uptrace/bun)
+- [ ] https://github.com/cckwes/fiber-graphql-go
+- [ ] https://github.com/stretchr/testify
 
 ## Реализация
 
@@ -124,10 +133,10 @@ $ docker-compose up -d --build
 - [x] Составить план - уже хороший план
 - [x] LiveSharing
 - Boilerplate (модульный монолит)
-- Простейшая реализация PUB/SUB 1-1 & 1-N
-- Members: и отправляют и читают 
-- Rooms: приватные (1-1) и общие (1-N)
 - Все сообщения хранятся вечно, и могут быть получены в отложенном режиме
+- Простейшая реализация PUB/SUB 1-1 & 1-N
+- Members: и отправляют и читают
+- Rooms: приватные (1-1) и общие (1-N)
 - GraphQL Subscribe
 
 ### Stage 2
@@ -136,34 +145,142 @@ $ docker-compose up -d --build
 
 ### Stage 3
 
-- Поднять k8s
+- Поднять RabbitMQ (для обработки всплесков нагрузки)
 
 ### Stage 4
 
-- Поднять Kafka
+- Поднять k8s
 
 ### Stage 5
 
 - Микросервисы для "бутылочных горлышек" (а не для красоты)
+- Поднять GRPS (для синхронных вызовов между микросервисами)
+- Поднять RabbitMQ (для асинхронной шины данных между микросервисами)
+- Поднять API Gateway https://loft.sh/blog/nginx-vs-traefik-vs-haproxy-comparing-kubernetes-ingress-controllers/
 
 ### Stage 6
 
+- Чистую архитектуру, пожалуйста: ​или луковую, или гексагональную
 - EventSourcing+CQRS
+- Читаем с реплики, пишем в мастер
 
 ### Stage 7
 
-- Temporal
+- Temporal + https://github.com/vikstrous/tstemporal
+- Поднять Kafka (для реализации "машины времени")
 
-***
+### Stage 8
 
-- https://www.youtube.com/watch?v=tv8muwgj-Y4
-- https://www.youtube.com/watch?v=UP4w70VXKt4
+- MINIO as S3 (для картинок)
+
+## gqlgen
+
+- [Представляем gqlgen: генератор серверов GraphQL для Go](https://habr.com/ru/articles/792700/)
+- [GraphQL и GO: простой способ бросить REST](https://www.youtube.com/watch?v=tv8muwgj-Y4)
+- [gqlgen: GraphQL для строгих](https://www.youtube.com/watch?v=UP4w70VXKt4)
+- https://github.com/comerc/graphql-articles
 - https://github.com/nodkz/conf-talks
-- https://github.com/acelot/graphql-articles
 - https://altairgraphql.dev/
-- https://habr.com/ru/articles/510448/
+- [Лексоранги — что это такое и как их использовать для эффективной сортировки списков](https://habr.com/ru/articles/510448/)
 - https://github.com/jaydenseric/graphql-multipart-request-spec
 - https://github.com/vektah/dataloaden
 - https://github.com/99designs/gqlgen
- 
+- [React Apollo, Gqlgen – авторизация. Часть 1](https://habr.com/ru/articles/598359/)
+- [React Apollo, Gqlgen – авторизация. Часть 2](https://habr.com/ru/articles/599723/)
+- [GraphQL и Golang](https://habr.com/ru/companies/ruvds/articles/444346/)
+- [Разработка REST-серверов на Go. Часть 7: GraphQL](https://habr.com/ru/companies/ruvds/articles/568472/)
+- [Как использовать GraphQL Federation для инкрементальной миграции с монолита (Python) на микросервисы (Go)](https://habr.com/ru/companies/macloud/articles/559352/)
+- [Развитие инфраструктуры Погоды. Доклад Яндекса (как мы эволюционировали из REST в GraphQL и почему это сделало жизнь разработчиков фронтенда и приложений мягкой и шелковистой)](https://habr.com/ru/companies/yandex/articles/565234/)
+- GQLGen PG TODO Example: [Variant1](https://github.com/comerc/gqlgen-pg-todo), [Variant2](https://github.com/stasundr/gqlgen-pg-todo-example)
 
+---
+
+- [GraphQL Multipart Request](https://www.apollographql.com/docs/router/executing-operations/subscription-multipart-protocol/)
+- [Multipart HTTP protocol for GraphQL subscriptions](https://github.com/jaydenseric/graphql-multipart-request-spec)
+- [GraphQL over WebSocket Protocol](https://github.com/apollographql/subscriptions-transport-ws/blob/master/PROTOCOL.md)
+- [GraphQL Cursor Connections Specification](https://relay.dev/graphql/connections.htm)
+- [Apollo Federation](https://www.apollographql.com/docs/apollo-server/federation/introduction)
+
+---
+
+Горизонтальное масштабирование кода на GoLang с использованием Kubernetes (k8s) можно реализовать следующим образом:
+
+1. **Создание приложения**: Сначала создайте базовое веб-приложение на Go³.
+
+2. **Контейнеризация приложения**: Примените Docker к вашему приложению Go, создав Dockerfile и собрав образ Docker³.
+
+3. **Развертывание образа Docker в Kubernetes**: Создайте развертывание Kubernetes, которое использует ваш образ Docker³.
+
+4. **Создание службы Kubernetes**: Создайте службу Kubernetes, которая обеспечивает доступ к вашему приложению³.
+
+5. **Автомасштабирование**: Используйте Horizontal Pod Autoscaler (HPA) в Kubernetes для автоматического масштабирования вашего приложения в зависимости от нагрузки¹. HPA автоматически увеличивает или уменьшает количество подов в вашем развертывании в зависимости от текущей нагрузки¹.
+
+6. **Оптимизация нагрузки на сервер**: Реализуйте лучшие практики для снижения нагрузки на сервер и достижения оптимального использования ресурсов². Это может включать в себя мониторинг с помощью готовности и живучести зондов, использование автомасштабирования и оптимизацию использования ресурсов².
+
+7. **Тестирование**: Проведите тестирование, чтобы убедиться, что ваше приложение корректно масштабируется¹.
+
+Помните, что горизонтальное масштабирование - это сложный процесс, который требует тщательного планирования и тестирования. Убедитесь, что вы полностью понимаете все аспекты вашего приложения, прежде чем начинать масштабирование¹.
+
+Source: Conversation with Bing, 2/11/2024
+(1) Build and Deploy Containerized Applications with Golang on Kubernetes. https://www.coding-bootcamps.com/build-containerized-applications-with-golang-on-kubernetes/.
+(2) How to Configure Kubernetes Horizontal Pod Autoscaler using Metrics .... https://www.digitalocean.com/community/tutorials/how-to-configure-kubernetes-horizontal-pod-autoscaler-using-metrics-server.
+(3) Optimizing Golang Applications for Kubernetes: Best Practices ... - Earthly. https://earthly.dev/blog/optimize-golang-for-kubernetes/.
+(4) scale package - k8s.io/client-go/scale - Go Packages. https://pkg.go.dev/k8s.io/client-go/scale.
+(5) Create a Kubernetes Operator in Golang to automatically manage a simple .... https://developers.redhat.com/blog/2020/12/16/create-a-kubernetes-operator-in-golang-to-automatically-manage-a-simple-stateful-application.
+
+---
+
+Выбор между Kafka, NATS и RabbitMQ для обработки всплесков нагрузки также зависит от ваших конкретных потребностей и предпочтений. Вот некоторые ключевые особенности каждого из них:
+
+**Kafka**:
+
+- Kafka обеспечивает высокую пропускную способность для обработки входящих и исходящих потоков данных в реальном времени¹.
+- Kafka обеспечивает устойчивость к сбоям благодаря репликации данных между узлами¹.
+- Kafka поддерживает "по крайней мере один раз" и "ровно один раз" доставку сообщений¹.
+- Kafka не поддерживает многопользовательский режим¹.
+
+**NATS**:
+
+- NATS известен своей высокой масштабируемостью и низкой задержкой. Он спроектирован для эффективной обработки большого количества подписчиков и сообщений¹.
+- NATS поддерживает "по крайней мере один раз", и "ровно один раз" доставку сообщений в JetStream¹.
+- NATS поддерживает истинный многопользовательский режим и децентрализованную безопасность через учетные записи и определение общих потоков и услуг¹.
+
+**RabbitMQ**:
+
+- RabbitMQ обеспечивает "по крайней мере один раз" и "ровно один раз" доставку сообщений¹.
+- Масштабируемость RabbitMQ ограничена его дизайном. Он полагается на централизованный брокер, который может стать узким местом при обработке большого объема сообщений².
+- RabbitMQ поддерживает многопользовательский режим с помощью виртуальных хостов; обмен данными не поддерживается¹.
+
+Все три инструмента являются мощными и могут быть использованы для обработки всплесков нагрузки, но выбор между ними будет зависеть от ваших конкретных требований и предпочтений. Вы можете найти дополнительную информацию о сравнении Kafka, NATS и RabbitMQ в [этой статье](^1^) и [этой статье](^2^).
+
+Source: Conversation with Bing, 2/11/2024
+(1) Compare NATS - NATS Docs. https://docs.nats.io/compare-nats.
+(2) RabbitMQ против Kafka: два разных подхода к обмену сообщениями. https://habr.com/ru/companies/itsumma/articles/416629/.
+(3) Compare NATS - NATS Docs. https://docs.nats.io/compare-nats.
+(4) RabbitMQ против Kafka: два разных подхода к обмену сообщениями. https://habr.com/ru/companies/itsumma/articles/416629/.
+(5) Apache Kafka и RabbitMQ: в чем разница и что лучше изучать?. https://habr.com/ru/companies/slurm/articles/666326/.
+
+---
+
+Tarantool может быть использован в качестве горячего кэша перед PostgreSQL. Вот некоторые основные преимущества этого подхода:
+
+1. **Высокая производительность**: Tarantool известен своей высокой производительностью и способностью обрабатывать большое количество запросов в секунду¹.
+
+2. **Гибкость**: Tarantool позволяет вам хранить данные в памяти и на диске, что дает вам гибкость в управлении вашими данными¹.
+
+3. **Простота использования**: Tarantool имеет простой и интуитивно понятный API, который делает его легким в использовании¹.
+
+4. **Совместимость с PostgreSQL**: Существует коннектор Tarantool для PostgreSQL, который позволяет вам легко интегрировать эти две системы³.
+
+Однако, стоит отметить, что использование Tarantool в качестве кэша перед PostgreSQL может потребовать дополнительной настройки и адаптации вашего приложения. Вам нужно будет настроить ваше приложение так, чтобы оно сначала проверяло данные в Tarantool, а затем, если данные не найдены, обращалось к PostgreSQL¹.
+
+Вы можете найти дополнительную информацию о использовании Tarantool в качестве кэша в [этой статье](^1^) и [этой статье](^2^).
+
+Source: Conversation with Bing, 2/11/2024
+(1) Как использовать tarantool в качестве кэша существующей базы?. https://ru.stackoverflow.com/questions/700552/%d0%9a%d0%b0%d0%ba-%d0%b8%d1%81%d0%bf%d0%be%d0%bb%d1%8c%d0%b7%d0%be%d0%b2%d0%b0%d1%82%d1%8c-tarantool-%d0%b2-%d0%ba%d0%b0%d1%87%d0%b5%d1%81%d1%82%d0%b2%d0%b5-%d0%ba%d1%8d%d1%88%d0%b0-%d1%81%d1%83%d1%89%d0%b5%d1%81%d1%82%d0%b2%d1%83%d1%8e%d1%89%d0%b5%d0%b9-%d0%b1%d0%b0%d0%b7%d1%8b.
+(2) GitHub - tarantool/pg: PostgreSQL connector for Tarantool. https://github.com/tarantool/pg.
+(3) Как использовать tarantool в качестве кэша существующей базы?. https://ru.stackoverflow.com/questions/700552/%d0%9a%d0%b0%d0%ba-%d0%b8%d1%81%d0%bf%d0%be%d0%bb%d1%8c%d0%b7%d0%be%d0%b2%d0%b0%d1%82%d1%8c-tarantool-%d0%b2-%d0%ba%d0%b0%d1%87%d0%b5%d1%81%d1%82%d0%b2%d0%b5-%d0%ba%d1%8d%d1%88%d0%b0-%d1%81%d1%83%d1%89%d0%b5%d1%81%d1%82%d0%b2%d1%83%d1%8e%d1%89%d0%b5%d0%b9-%d0%b1%d0%b0%d0%b7%d1%8b.
+(4) postgresql - Using Tarantool and Postgres together - Stack Overflow. https://stackoverflow.com/questions/55460604/using-tarantool-and-postgres-together.
+(5) undefined. https://www.computerweekly.com/feature/Write-through-write-around-write-back-Cache-explained.
+(6) undefined. https://github.com/bucardo/bucardo.
+(7) undefined. https://www.tarantool.io/en/doc/2.2/reference/reference_rock/dbms/.
