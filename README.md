@@ -18,8 +18,8 @@
 
 ## Применить инфраструктуру (вхождений на hh.ru)
 
-- [ ] RabbitMQ (1417)
-- [ ] ~~Redis~~ (1387)
+- [ ] ~~RabbitMQ~~ (1417)
+- [ ] Redis (1387)
 - [ ] Kafka (2573)
 - [ ] Grafana (1491)
 - [ ] ~~Nagios~~ (65)
@@ -54,6 +54,7 @@
 - [ ] Centrifugo
 - [ ] Livekit.io
 - [ ] MINIO https://github.com/minio/minio-go
+- [ ] GitHub Actions: [Try & Makefile](https://github.com/nektos/act), [Marketplace](https://github.com/marketplace/), [Starter-Workflows](https://github.com/actions/starter-workflows), [QuickStart](https://docs.github.com/en/actions/quickstart).
 
 ## Для DevOPS
 
@@ -89,7 +90,7 @@
 - [ ] github.com/uber-go/config
 - [ ] [Методы организации DI и жизненного цикла приложения в GO](https://habr.com/ru/companies/vivid_money/articles/531822/)
 - [ ] github.com/yonahd/kor@latest - инструмент для обнаружения неиспользуемых ресурсов Kubernetes
-- [ ] gorilla/mux | stdlib mux 1.22 (or fiber?)
+- [ ] gorilla/mux | stdlib mux 1.22 (or fiber or atreugo)
 - [ ] bytedance/sonic
 - [ ] failsafe-go.dev
 - [ ] goconvey - is awesome BDD in Go
@@ -145,7 +146,7 @@ $ docker-compose up -d --build
 
 ### Stage 3
 
-- Поднять RabbitMQ (для обработки всплесков нагрузки)
+- Поднять Redis, а не RabbitMQ (для обработки всплесков нагрузки)
 
 ### Stage 4
 
@@ -155,7 +156,7 @@ $ docker-compose up -d --build
 
 - Микросервисы для "бутылочных горлышек" (а не для красоты)
 - Поднять GRPS (для синхронных вызовов между микросервисами)
-- Поднять RabbitMQ (для асинхронной шины данных между микросервисами)
+- Поднять Redis, а не RabbitMQ (для асинхронной шины данных между микросервисами)
 - Поднять API Gateway https://loft.sh/blog/nginx-vs-traefik-vs-haproxy-comparing-kubernetes-ingress-controllers/
 
 ### Stage 6
@@ -166,12 +167,16 @@ $ docker-compose up -d --build
 
 ### Stage 7
 
-- Temporal + https://github.com/vikstrous/tstemporal
+- Temporal + https://github.com/vikstrous/tempts
 - Поднять Kafka (для реализации "машины времени")
 
 ### Stage 8
 
 - MINIO as S3 (для картинок)
+
+### Stage 9
+
+- Push-уведомления?
 
 ## gqlgen
 
@@ -284,3 +289,22 @@ Source: Conversation with Bing, 2/11/2024
 (5) undefined. https://www.computerweekly.com/feature/Write-through-write-around-write-back-Cache-explained.
 (6) undefined. https://github.com/bucardo/bucardo.
 (7) undefined. https://www.tarantool.io/en/doc/2.2/reference/reference_rock/dbms/.
+
+## Что нужно от брокера?
+
+![](./assets/pub-sub-broker.png)
+
+- Производительность
+- Сохранение порядка сообщений - [ULID](https://danyloff.tech/2023/10/01/ulid-%D1%82%D0%BE%D1%82-%D1%81%D0%B0%D0%BC%D1%8B%D0%B8-%D1%84%D0%BE%D1%80%D0%BC%D0%B0%D1%82-%D0%B8%D0%B4%D0%B5%D0%BD%D1%82%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%82%D0%BE%D1%80%D0%B0-%D0%BA%D0%BE%D1%82/)
+- Масштабируемость брокера
+- Миллионы топиков
+- Кэш/стрим сообщений
+- Возможность писать процедуры - большой бонус
+
+[Масштабируем WebSocket-соединения на Go / Александр Емелин (Авито)](https://www.youtube.com/watch?v=eP_02zkwM5Y)
+
+> на 100000 соединений RabbitMQ потреблял 70 CPU, а Redis - 0,3 CPU
+
+- Sentinel является менеджером отказоустойчивости репликации для Redis.
+
+- github.com/gogo/protobuf - ускоряет сериализацию protobuf в пять раз, т.к. вметсо reflect использует кодогенерацию (ffjson & easyjson - такая же история).
