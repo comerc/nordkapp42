@@ -45,7 +45,7 @@
 - [ ] ~~Jenkins~~ (1276)
 - [ ] ~~TeamCity~~ (345)
 - [ ] ~~DeployHQ~~ (132)
-- [ ] GitHub Actions (54)
+- [ ] GitHub Actions (54): [Try & Makefile](https://github.com/nektos/act), [Marketplace](https://github.com/marketplace/), [Starter-Workflows](https://github.com/actions/starter-workflows), [QuickStart](https://docs.github.com/en/actions/quickstart).
 - [ ] golangci-lint
 - [ ] uber-go/automaxprocs
 - [ ] uber-go/goleak - умеет показывать какие горутины не померли
@@ -54,7 +54,6 @@
 - [ ] Centrifugo + [gobwas/ws](https://github.com/centrifugal/centrifuge/blob/master/_examples/ws_benchmarks/benchmark_gobwas/main.go)
 - [ ] Livekit.io
 - [ ] MINIO https://github.com/minio/minio-go
-- [ ] GitHub Actions: [Try & Makefile](https://github.com/nektos/act), [Marketplace](https://github.com/marketplace/), [Starter-Workflows](https://github.com/actions/starter-workflows), [QuickStart](https://docs.github.com/en/actions/quickstart).
 
 ## Для DevOPS
 
