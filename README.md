@@ -54,6 +54,7 @@
 - [ ] Centrifugo + [gobwas/ws](https://github.com/centrifugal/centrifuge/blob/master/_examples/ws_benchmarks/benchmark_gobwas/main.go)
 - [ ] Livekit.io
 - [ ] MINIO https://github.com/minio/minio-go
+- [ ] Stitching or Federation - https://habr.com/ru/articles/728476/
 
 ## Для DevOPS
 
@@ -137,7 +138,7 @@ $ docker-compose up -d --build
 - Простейшая реализация PUB/SUB 1-1 & 1-N
 - Members: и отправляют и читают
 - Rooms: приватные (1-1) и общие (1-N)
-- GraphQL Subscribe
+- GraphQL Subscribe + Centrifugo
 
 ### Stage 2
 
