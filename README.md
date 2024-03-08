@@ -138,7 +138,7 @@ $ docker-compose up -d --build
 - Простейшая реализация PUB/SUB 1-1 & 1-N
 - Members: и отправляют и читают
 - Rooms: приватные (1-1) и общие (1-N)
-- GraphQL Subscribe + Centrifugo
+- GraphQL Subscribe
 
 ### Stage 2
 
@@ -158,6 +158,7 @@ $ docker-compose up -d --build
 - Поднять GRPS (для синхронных вызовов между микросервисами)
 - Поднять Redis, а не RabbitMQ (для асинхронной шины данных между микросервисами)
 - Поднять API Gateway https://loft.sh/blog/nginx-vs-traefik-vs-haproxy-comparing-kubernetes-ingress-controllers/
+- Как поженить с Hasura под Highload
 
 ### Stage 6
 
@@ -308,3 +309,19 @@ Source: Conversation with Bing, 2/11/2024
 - Sentinel является менеджером отказоустойчивости репликации для Redis.
 
 - github.com/gogo/protobuf - ускоряет сериализацию protobuf в пять раз, т.к. вметсо reflect использует кодогенерацию (ffjson & easyjson - такая же история).
+
+***
+
+Go-Fiber
+
+https://github.com/99designs/gqlgen/discussions/1802
+https://github.com/99designs/gqlgen/issues/1281
+https://github.com/99designs/gqlgen/issues/1664#issuecomment-1616620967
+
+***
+
+Нагрузочное тестирование Centrifugo
+
+https://github.com/centrifugal/centrifugo/blob/master/misc/benchmarking/k6/readme.md
+https://github.com/centrifugal/centrifuge/tree/master/_examples/ws_benchmarks/benchmark_gobwas
+https://github.com/centrifugal/centrifuge/tree/master/_examples/ws_benchmarks/benchmark_gorilla
