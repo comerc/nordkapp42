@@ -138,7 +138,7 @@ $ docker-compose up -d --build
 - Простейшая реализация PUB/SUB 1-1 & 1-N
 - Members: и отправляют и читают
 - Rooms: приватные (1-1) и общие (1-N)
-- GraphQL Subscribe
+- GraphQL Subscribe via Websocket & SSE (https://github.com/99designs/gqlgen/pull/2498)
 
 ### Stage 2
 
