@@ -69,7 +69,11 @@
 - [ ] testcontainers-go
 - [ ] bufbuild/buf
 - [ ] golang-migrate/migrate
+- [ ] sqlize 
+  - Generate sql migration from diff between existed sql and objects
+  - Generate migration version - compatible with golang-migrate/migrate
 - [ ] pressly/goose
+- [ ] [механизм миграций из Hasura](https://hasura.io/docs/latest/migrations-metadata-seeds/manage-migrations/)
 - [ ] flaggy | go-flags | pflag
 - [ ] [Лучший regexp для Go](https://habr.com/ru/articles/756222/)
 - [ ] цветные логи: https://github.com/GolangLessons/url-shortener/blob/c3987f66469a8d0769add18521adb9023520be95/internal/lib/logger/handlers/slogpretty/slogpretty.go
@@ -325,3 +329,78 @@ https://github.com/99designs/gqlgen/issues/1664#issuecomment-1616620967
 https://github.com/centrifugal/centrifugo/blob/master/misc/benchmarking/k6/readme.md
 https://github.com/centrifugal/centrifuge/tree/master/_examples/ws_benchmarks/benchmark_gobwas
 https://github.com/centrifugal/centrifuge/tree/master/_examples/ws_benchmarks/benchmark_gorilla
+
+***
+
+## Setup Hasura
+
+```bash
+$ cd hasura && docker-compose up -d
+```
+
+#### Connect Database
+
+- Database Display Name: default
+- Environment Variable: PG_DATABASE_URL
+
+## How to save DB-Schema
+
+```bash
+$ cd hasura
+$ rm -rf migrations
+$ hasura migrate create "init" --from-server --database-name default
+$ rm -rf metadata
+$ hasura metadata export
+```
+
+## How to restore DB-Schema
+
+```bash
+$ cd hasura
+$ hasura migrate apply
+$ hasura metadata apply
+```
+
+## How to backup data
+
+```bash
+$ cd hasura
+$ curl --location --request POST 'http://localhost:8080/v1alpha1/pg_dump' --header 'x-hasura-admin-secret: myadminsecretkey' --header 'Content-Type: application/json' --data-raw '{ "opts": ["-O", "-x", "--data-only", "--schema", "public", "--schema", "auth"], "clean_output": true}' -o data.sql
+```
+
+## How to restore data
+
+```bash
+$ cd hasura
+$ cat data.sql | docker exec -i nordkapp42-postgres-1 psql -U postgres
+```
+
+## How To Start
+
+```bash
+$ npm install
+$ npm run dev
+```
+
+## Install the Hasura CLI, and dive into the console
+
+```bash
+hasura init
+cd hasura && hasura console
+```
+
+## How To Generate GraphQL Schema
+
+via Apollo CLI (deprecated)
+
+```bash
+$ npm install -g apollo graphql
+$ apollo client:download-schema --endpoint http://localhost:8080/v1/graphql --header "X-Hasura-Admin-Secret: myadminsecretkey"
+```
+
+via Apollo Rover
+
+```bash
+$ npm install -g @apollo/rover
+$ rover graph introspect --header "X-Hasura-Admin-Secret: myadminsecretkey" http://localhost:8080/v1/graphql > schema.graphql
+```
