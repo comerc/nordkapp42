@@ -1,0 +1,11 @@
+table:
+  name: room
+  schema: public
+configuration:
+  column_config: {}
+  custom_column_names: {}
+  custom_root_fields:
+    select: selectRoom
+    select_aggregate: selectRoomAggregate
+    select_by_pk: selectRoomByPK
+    select_stream: selectRoomStream

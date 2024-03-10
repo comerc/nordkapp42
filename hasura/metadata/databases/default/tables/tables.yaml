@@ -1,0 +1,3 @@
+- "!include public_member.yaml"
+- "!include public_room.yaml"
+- "!include public_room_kind.yaml"
