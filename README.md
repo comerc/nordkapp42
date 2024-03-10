@@ -141,7 +141,7 @@ $ docker-compose up -d --build
 - Все сообщения хранятся вечно, и могут быть получены в отложенном режиме
 - Простейшая реализация PUB/SUB 1-1 & 1-N
 - Members: и отправляют и читают
-- Rooms: приватные (1-1) и общие (1-N)
+- Rooms: 1-1 и 1-N (приватные и публичные)
 - GraphQL Subscribe via Websocket & SSE (https://github.com/99designs/gqlgen/pull/2498)
 
 ### Stage 2
@@ -404,3 +404,14 @@ via Apollo Rover
 $ npm install -g @apollo/rover
 $ rover graph introspect --header "X-Hasura-Admin-Secret: myadminsecretkey" http://localhost:8080/v1/graphql > schema.graphql
 ```
+
+***
+
+## Соглашения
+
+- Таблицы именуются в единственном числе, для соответствия GraphQL-типов.
+- Таблицы и колонки именуются через подчёркивание (в Python-стиле).
+- Data Manager > Edit > GraphQL Customization > Naming Conversion > graphql-default
+- Поля id, created_by, updated_by в начале каждой таблицы сущности.
+- Enum-таблицы имеют одно поле с именем value.
+- Поле id инкрементится через identity.
