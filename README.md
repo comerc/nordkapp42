@@ -112,6 +112,7 @@
 - [ ] [bun - SQL-first Golang ORM](https://github.com/uptrace/bun)
 - [ ] https://github.com/cckwes/fiber-graphql-go
 - [ ] https://github.com/stretchr/testify
+- [ ] https://github.com/magefile/mage
 
 ## Реализация
 
