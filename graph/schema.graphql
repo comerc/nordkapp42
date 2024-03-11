@@ -1,0 +1,59 @@
+# rooms {
+#   id
+#   name
+#   kind
+#   messages {
+#     id
+#     text
+#     isRead
+#     member {
+#       id
+#       name
+#     }
+#   }
+# }
+
+type Query {
+  rooms: [Room!]! 
+}
+
+type Subscription {
+  rooms: [Room!]! 
+}
+
+type Member {
+  createdAt: timestamptz!
+  id: Int!
+  name: String!
+  updatedAt: timestamptz!
+}
+
+type Message {
+  createdAt: timestamptz!
+  id: Int!
+  isRead: Boolean!
+  memberId: Int!
+  roomId: Int!
+  text: String!
+  updatedAt: timestamptz!
+  member: Member
+}
+
+type Room {
+  createdAt: timestamptz!
+  id: Int!
+  kind: RoomKindEnum!
+  name: String
+  updatedAt: timestamptz!
+  messages: [Message!]!
+}
+
+scalar timestamptz
+
+enum RoomKindEnum {
+  CHAT
+  PRIVATE_CHANNEL
+  PRIVATE_GROUP
+  PUBLIC_CHANNEL
+  PUBLIC_GROUP
+}
