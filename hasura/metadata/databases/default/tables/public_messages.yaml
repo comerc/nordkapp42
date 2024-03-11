@@ -1,0 +1,19 @@
+table:
+  name: messages
+  schema: public
+configuration:
+  column_config: {}
+  custom_column_names: {}
+  custom_name: Message
+  custom_root_fields:
+    delete: deleteMessages
+    delete_by_pk: deleteMessageByPk
+    insert: insertMessages
+    insert_one: insertMessageOne
+    select: messages
+    select_aggregate: selectMessagesAggregate
+    select_by_pk: selectMessageByPk
+    select_stream: selectMessagesStream
+    update: updateMessages
+    update_by_pk: updateMessageByPk
+    update_many: updateManyMessages

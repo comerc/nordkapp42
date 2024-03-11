@@ -141,8 +141,8 @@ $ docker-compose up -d --build
 - Boilerplate (модульный монолит)
 - Все сообщения хранятся вечно, и могут быть получены в отложенном режиме
 - Простейшая реализация PUB/SUB 1-1 & 1-N
-- Members: и отправляют и читают
-- Rooms: 1-1 и 1-N (приватные и публичные)
+  - Members: и отправляют и читают
+  - Rooms: 1-1 и 1-N (приватные и публичные)
 - Поднять Hasura 
   - Определить соглашения в metadata 
   - Сформировать migrations
@@ -413,9 +413,86 @@ $ rover graph introspect --header "X-Hasura-Admin-Secret: myadminsecretkey" http
 
 ## Соглашения
 
-- Таблицы именуются в единственном числе, для соответствия GraphQL-типов.
+- Таблицы именуются во множественном числе.
+- Переименования в metadata для соответствия GraphQL-типов. 
 - Таблицы и колонки именуются через подчёркивание (в Python-стиле).
 - Data Manager > Edit > GraphQL Customization > Naming Conversion > graphql-default
 - Поля id, created_by, updated_by в начале каждой таблицы сущности.
-- Enum-таблицы имеют одно поле с именем value.
+- Enum-таблицы имеют одно поле с именем value, именуются в единственном числе.
 - Поле id инкрементится через identity.
+
+## Схема БД
+
+- members
+  - id
+  - name
+
+- rooms
+  - id
+  - name
+  - kind
+  * messages
+
+- messages
+  - id
+  - room_id
+  - member_id
+  - text
+  - is_read
+  * member
+
+- room_members
+  - member_id
+  - room_id
+
+```sql
+CREATE
+OR REPLACE VIEW "public"."chat_rooms" AS
+SELECT
+  rooms.id AS room_id,
+  room_members.member_id
+FROM
+  rooms,
+  room_members
+WHERE
+  (
+    (rooms.kind = 'CHAT' :: text)
+    AND (rooms.id = room_members.room_id)
+  );
+  -- AND room_members.member_id != session_variables->>'x-hasura-user-id'
+
+CREATE
+OR REPLACE VIEW "public"."more_rooms" AS
+SELECT
+  rooms.id AS room_id
+FROM
+  rooms
+WHERE
+  (rooms.kind <> 'CHAT' :: text);
+```
+
+## How to get JWT
+
+https://jwt.io/
+
+```yml
+HASURA_GRAPHQL_JWT_SECRET: '{ "type": "HS256", "key": "30b50d8699c8b71ea291f453877e5dec" }'
+```
+
+```json
+{
+  "sub": "1234567890",
+  "name": "John Doe",
+  "admin": true,
+  "iat": 1516239022,
+  "https://hasura.io/jwt/claims": {
+    "x-hasura-allowed-roles": ["editor","user", "mod"],
+    "x-hasura-default-role": "user",
+    "x-hasura-user-id": "1",
+    "x-hasura-org-id": "123",
+    "x-hasura-custom": "custom-value"
+  }
+}
+```
+
+Authorization Bearer <JWT>

@@ -1,0 +1,19 @@
+table:
+  name: members
+  schema: public
+configuration:
+  column_config: {}
+  custom_column_names: {}
+  custom_name: Member
+  custom_root_fields:
+    delete: deleteMembers
+    delete_by_pk: deleteMemberByPk
+    insert: insertMembers
+    insert_one: insertMemberOne
+    select: members
+    select_aggregate: selectMembersAggregate
+    select_by_pk: selectMemberByPk
+    select_stream: selectMembersStream
+    update: updateMembers
+    update_by_pk: updateMemberByPk
+    update_many: updateManyMembers

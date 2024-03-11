@@ -1,0 +1,19 @@
+table:
+  name: rooms
+  schema: public
+configuration:
+  column_config: {}
+  custom_column_names: {}
+  custom_name: Room
+  custom_root_fields:
+    delete: deleteRooms
+    delete_by_pk: deleteRoomByPk
+    insert: insertRooms
+    insert_one: insertRoomOne
+    select: rooms
+    select_aggregate: selectRoomsAggregate
+    select_by_pk: selectRoomByPk
+    select_stream: selectRoomsStream
+    update: updateRooms
+    update_by_pk: updateRoomByPk
+    update_many: updateManyRooms
