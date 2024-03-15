@@ -8,8 +8,6 @@ import (
 	"context"
 	"fmt"
 	"nordkapp42/graph/model"
-	"nordkapp42/loaders"
-	"nordkapp42/utils"
 )
 
 // Member is the resolver for the member field.
@@ -19,7 +17,7 @@ func (r *messageResolver) Member(ctx context.Context, obj *model.Message) (*mode
 
 // Rooms is the resolver for the rooms field.
 func (r *queryResolver) Rooms(ctx context.Context) ([]*model.Room, error) {
-	db := utils.ForDB(ctx)
+	db := ForDB(ctx)
 	var rooms []*model.Room
 	query := db.NewSelect().Model(&rooms)
 	// if limit != nil {
@@ -37,7 +35,7 @@ func (r *queryResolver) Rooms(ctx context.Context) ([]*model.Room, error) {
 // Messages is the resolver for the messages field.
 func (r *roomResolver) Messages(ctx context.Context, obj *model.Room) ([]*model.Message, error) {
 	messageIDs := []int{2, 3}
-	loader := loaders.ForLoaders(ctx).MessageLoader
+	loader := ForLoaders(ctx).MessageLoader
 	return loader.LoadAll(ctx, messageIDs)
 }
 

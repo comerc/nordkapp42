@@ -10,3 +10,7 @@ type Message struct {
 	UpdatedAt string `json:"updatedAt"`
 	// Member    *Member `json:"member,omitempty"`
 }
+
+func (m Message) GetID() int {
+	return m.ID
+}

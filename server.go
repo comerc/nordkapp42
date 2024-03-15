@@ -16,12 +16,14 @@ import (
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/extra/bundebug"
 
+	"nordkapp42/graph"
 	"nordkapp42/http/handler"
-	"nordkapp42/loaders"
 )
 
 const Addr = ":8888"
 const ShutdownTimeout = time.Duration(10) * time.Second
+
+// TODO: Лучшей практикой при обработке контекстных ключей будет создание неэкспортируемого пользовательского типа: `type key string; const myCustomKey key = "key"; ctx := context.WithValue(context.Background(), myCustomKey, "val")`
 
 func WithDB(db *bun.DB) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
@@ -34,7 +36,7 @@ func WithDB(db *bun.DB) func(next http.Handler) http.Handler {
 
 func WithDataLoader(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := context.WithValue(r.Context(), "loaders", loaders.NewLoaders())
+		ctx := context.WithValue(r.Context(), "loaders", graph.NewLoaders())
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
