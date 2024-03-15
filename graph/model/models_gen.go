@@ -15,27 +15,7 @@ type Member struct {
 	UpdatedAt string `json:"updatedAt"`
 }
 
-type Message struct {
-	CreatedAt string  `json:"createdAt"`
-	ID        int     `json:"id"`
-	IsRead    bool    `json:"isRead"`
-	MemberID  int     `json:"memberId"`
-	RoomID    int     `json:"roomId"`
-	Text      string  `json:"text"`
-	UpdatedAt string  `json:"updatedAt"`
-	Member    *Member `json:"member,omitempty"`
-}
-
 type Query struct {
-}
-
-type Room struct {
-	CreatedAt string       `json:"createdAt"`
-	ID        int          `json:"id"`
-	Kind      RoomKindEnum `json:"kind"`
-	Name      *string      `json:"name,omitempty"`
-	UpdatedAt string       `json:"updatedAt"`
-	Messages  []*Message   `json:"messages"`
 }
 
 type Subscription struct {

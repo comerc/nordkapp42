@@ -8,11 +8,39 @@ import (
 	"context"
 	"fmt"
 	"nordkapp42/graph/model"
+	"nordkapp42/loaders"
+	"nordkapp42/utils"
 )
+
+// Member is the resolver for the member field.
+func (r *messageResolver) Member(ctx context.Context, obj *model.Message) (*model.Member, error) {
+	panic(fmt.Errorf("not implemented: Member - member"))
+}
 
 // Rooms is the resolver for the rooms field.
 func (r *queryResolver) Rooms(ctx context.Context) ([]*model.Room, error) {
-	panic(fmt.Errorf("not implemented: Rooms - rooms"))
+	db := utils.ForDB(ctx)
+	var rooms []*model.Room
+	query := db.NewSelect().Model(&rooms)
+	// if limit != nil {
+	// 	query = query.Limit(*limit)
+	// }
+	// if offset != nil {
+	// 	query = query.Offset(*offset)
+	// }
+	if err := query.Scan(ctx); err != nil {
+		return nil, err
+	}
+	return rooms, nil
+}
+
+// Messages is the resolver for the messages field.
+func (r *roomResolver) Messages(ctx context.Context, obj *model.Room) ([]*model.Message, error) {
+	messageIDs := []int{2, 3}
+	loader := loaders.ForLoaders(ctx).MessageLoader
+	loader.LoadAll(ctx, messageIDs)
+	var messages []*model.Message
+	return messages, nil
 }
 
 // Rooms is the resolver for the rooms field.
@@ -20,11 +48,35 @@ func (r *subscriptionResolver) Rooms(ctx context.Context) (<-chan []*model.Room,
 	panic(fmt.Errorf("not implemented: Rooms - rooms"))
 }
 
+// Message returns MessageResolver implementation.
+func (r *Resolver) Message() MessageResolver { return &messageResolver{r} }
+
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
+
+// Room returns RoomResolver implementation.
+func (r *Resolver) Room() RoomResolver { return &roomResolver{r} }
 
 // Subscription returns SubscriptionResolver implementation.
 func (r *Resolver) Subscription() SubscriptionResolver { return &subscriptionResolver{r} }
 
+type messageResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type roomResolver struct{ *Resolver }
 type subscriptionResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func QueryRoomsComplexity(childComplexity int) int {
+	return 10 * childComplexity
+}
+func SubscriptionRoomsComplexity(childComplexity int) int {
+	return 10 * childComplexity
+}
+func RoomMessagesComplexity(childComplexity int) int {
+	return 10 * childComplexity
+}

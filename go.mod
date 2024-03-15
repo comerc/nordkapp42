@@ -5,11 +5,11 @@ go 1.21.7
 require (
 	github.com/99designs/gqlgen v0.17.44
 	github.com/lib/pq v1.10.9
-	github.com/rs/zerolog v1.31.0
 	github.com/uptrace/bun v1.1.17
 	github.com/uptrace/bun/dialect/pgdialect v1.1.17
 	github.com/uptrace/bun/extra/bundebug v1.1.17
 	github.com/vektah/gqlparser/v2 v2.5.11
+	github.com/vikstrous/dataloadgen v0.0.6
 )
 
 require (
@@ -31,6 +31,8 @@ require (
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
+	go.opentelemetry.io/otel v1.11.1 // indirect
+	go.opentelemetry.io/otel/trace v1.11.1 // indirect
 	golang.org/x/mod v0.14.0 // indirect
 	golang.org/x/sys v0.16.0 // indirect
 	golang.org/x/text v0.14.0 // indirect

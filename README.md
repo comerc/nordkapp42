@@ -85,6 +85,7 @@
 - [ ] caarlos0/env
 - [ ] spf13/viper
 - [ ] jackc/pgx/v5/pgxpool / go-pg + pool - PG Pool
+- [ ] jackc/pgx https://www.youtube.com/watch?v=sXMSWhcHCf8
 - [ ] Masterminds/squirrel - SQL Builder (by Avito)
 - [ ] er := errgroup.Group{}; eg.SetLimit(limit) - ещё один примитив синхронизации (golang.org/x/sync/errgroup)
 - [ ] [Compile-time Dependency Injection for Go](https://github.com/google/wire)
