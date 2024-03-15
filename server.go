@@ -44,7 +44,11 @@ func WithDataLoader(next http.Handler) http.Handler {
 func NewAppHandler(db *bun.DB) *http.ServeMux {
 	mux := http.NewServeMux()
 	// mux.Handle("/", playground.Handler("GraphQL playground", "/api"))
-	mux.Handle("/api", WithDB(db)(WithDataLoader(handler.NewGraphQLHandler())))
+	var h http.Handler
+	h = handler.NewGraphQLHandler()
+	h = WithDataLoader(h)
+	h = WithDB(db)(h)
+	mux.Handle("/api", h)
 	return mux
 }
 
