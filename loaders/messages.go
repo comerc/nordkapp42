@@ -95,6 +95,5 @@ func getMessages(ctx context.Context, keys []int) ([]*model.Message, []error) {
 			messages[i] = nil // Keep place with nil if element is not found.
 		}
 	}
-	fmt.Printf("%v", messages)
 	return messages, errs
 }

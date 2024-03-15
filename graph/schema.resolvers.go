@@ -38,9 +38,7 @@ func (r *queryResolver) Rooms(ctx context.Context) ([]*model.Room, error) {
 func (r *roomResolver) Messages(ctx context.Context, obj *model.Room) ([]*model.Message, error) {
 	messageIDs := []int{2, 3}
 	loader := loaders.ForLoaders(ctx).MessageLoader
-	loader.LoadAll(ctx, messageIDs)
-	var messages []*model.Message
-	return messages, nil
+	return loader.LoadAll(ctx, messageIDs)
 }
 
 // Rooms is the resolver for the rooms field.
