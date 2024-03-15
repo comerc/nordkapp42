@@ -17,6 +17,7 @@ func ForLoaders(ctx context.Context) *Loaders {
 
 // Loaders wrap your data loaders to inject via middleware
 type Loaders struct {
+	MemberLoader  *dataloadgen.Loader[int, *model.Member]
 	MessageLoader *dataloadgen.Loader[int, *model.Message]
 }
 
@@ -24,6 +25,7 @@ type Loaders struct {
 func NewLoaders() *Loaders {
 	// define the data loader
 	return &Loaders{
+		MemberLoader:  dataloadgen.NewLoader(getModels[int, model.Member], dataloadgen.WithWait(time.Millisecond)),
 		MessageLoader: dataloadgen.NewLoader(getModels[int, model.Message], dataloadgen.WithWait(time.Millisecond)),
 	}
 }

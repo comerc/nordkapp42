@@ -12,7 +12,8 @@ import (
 
 // Member is the resolver for the member field.
 func (r *messageResolver) Member(ctx context.Context, obj *model.Message) (*model.Member, error) {
-	panic(fmt.Errorf("not implemented: Member - member"))
+	loader := ForLoaders(ctx).MemberLoader
+	return loader.Load(ctx, obj.MemberID)
 }
 
 // Rooms is the resolver for the rooms field.
