@@ -19,6 +19,20 @@ func (r *messageResolver) Member(ctx context.Context, obj *model.Message) (*mode
 // Rooms is the resolver for the rooms field.
 func (r *queryResolver) Rooms(ctx context.Context) ([]*model.Room, error) {
 	db := ForDB(ctx)
+
+	// var nums []int
+	// err := db.NewRaw(
+	// 	"SELECT rooms.id AS room_id"+
+	// 		" FROM rooms, room_members"+
+	// 		" WHERE ((rooms.kind = 'CHAT' :: text) AND (rooms.id = room_members.room_id) AND room_members.member_id = ?)", 1).
+	// 	Scan(ctx, &nums)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// fmt.Println("**********")
+	// fmt.Printf("%#v\n", nums[0])
+	// fmt.Println("**********")
+
 	var rooms []*model.Room
 	query := db.NewSelect().Model(&rooms)
 	// if limit != nil {

@@ -140,13 +140,13 @@ $ docker-compose up -d --build
 - [x] Составить план - уже хороший план
 - [x] LiveSharing
 - Boilerplate (модульный монолит)
-- Все сообщения хранятся вечно, и могут быть получены в отложенном режиме
+- Все сообщения хранятся вечно, и могут быть получены в отложенном режиме (Select Stream)
 - Простейшая реализация PUB/SUB 1-1 & 1-N
   - Members: и отправляют и читают
   - Rooms: 1-1 и 1-N (приватные и публичные)
-- Поднять Hasura 
-  - Определить соглашения в metadata 
-  - Сформировать migrations
+- [x] Поднять Hasura 
+  - [x] Определить соглашения в metadata 
+  - [x] Сформировать migrations
 - GraphQL Subscribe via Websocket & SSE ([server](https://github.com/99designs/gqlgen/pull/2498) & [client](https://the-guild.dev/graphql/sse))
 
 ### Stage 2
@@ -457,10 +457,21 @@ FROM
   room_members
 WHERE
   (
-    (rooms.kind = 'CHAT' :: text)
+    rooms.id IN (SELECT
+      rooms.id AS room_id,
+    FROM
+      rooms,
+      room_members
+    WHERE
+      (
+        (rooms.kind = 'CHAT' :: text)
+        AND (rooms.id = room_members.room_id)
+        AND room_members.member_id == session_variables->>'x-hasura-user-id'
+      )
+    )
     AND (rooms.id = room_members.room_id)
+    AND room_members.member_id != session_variables->>'x-hasura-user-id'
   );
-  -- AND room_members.member_id != session_variables->>'x-hasura-user-id'
 
 CREATE
 OR REPLACE VIEW "public"."more_rooms" AS
