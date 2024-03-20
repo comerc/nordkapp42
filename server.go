@@ -82,7 +82,7 @@ func main() {
 	}
 
 	go func() {
-		log.Printf("connect to %s for GraphQL playground", Addr)
+		log.Printf("app start on %s", Addr)
 		if err := server.ListenAndServe(); err != http.ErrServerClosed {
 			log.Fatal("app stopped due error", err)
 		}

@@ -23,7 +23,7 @@ type Loaders struct {
 
 // NewLoaders instantiates data loaders for the middleware
 func NewLoaders() *Loaders {
-	// define the data loader
+	// define the data loaders
 	return &Loaders{
 		MemberLoader:  dataloadgen.NewLoader(getModels[int, model.Member], dataloadgen.WithWait(time.Millisecond)),
 		MessageLoader: dataloadgen.NewLoader(getModels[int, model.Message], dataloadgen.WithWait(time.Millisecond)),
@@ -43,19 +43,17 @@ func getModels[T comparable, M model.Model[T]](ctx context.Context, keys []T) ([
 	// Mapping message IDs to messages for quick lookup.
 	m := make(map[T]*M)
 	for _, dbModel := range dbModels {
-		m[M(*dbModel).GetID()] = dbModel
+		m[(*dbModel).GetID()] = dbModel
 	}
 	// Reassembling the results in the order of keys.
 	models := make([]*M, len(keys))
-	errs := make([]error, len(keys))
+	errors := make([]error, len(keys))
 	for i, key := range keys {
 		if model, ok := m[key]; ok {
 			models[i] = model
 		} else {
-			// Handle the case where a key does not have a corresponding user.
-			errs = append(errs, fmt.Errorf("no element found for key: %v", key))
-			models[i] = nil // Keep place with nil if element is not found.
+			errors[i] = fmt.Errorf("no element found for key: %v", key)
 		}
 	}
-	return models, errs
+	return models, errors
 }

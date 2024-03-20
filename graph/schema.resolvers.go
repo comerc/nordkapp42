@@ -37,7 +37,8 @@ func (r *queryResolver) Rooms(ctx context.Context) ([]*model.Room, error) {
 func (r *roomResolver) Messages(ctx context.Context, obj *model.Room) ([]*model.Message, error) {
 	messageIDs := []int{2, 3}
 	loader := ForLoaders(ctx).MessageLoader
-	return loader.LoadAll(ctx, messageIDs)
+	messages, errorSlice := loader.LoadAll(ctx, messageIDs)
+	return messages, errorSlice
 }
 
 // Rooms is the resolver for the rooms field.
@@ -61,19 +62,3 @@ type messageResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type roomResolver struct{ *Resolver }
 type subscriptionResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//     it when you're done.
-//   - You have helper methods in this file. Move them out to keep these resolver files clean.
-func QueryRoomsComplexity(childComplexity int) int {
-	return 10 * childComplexity
-}
-func SubscriptionRoomsComplexity(childComplexity int) int {
-	return 10 * childComplexity
-}
-func RoomMessagesComplexity(childComplexity int) int {
-	return 10 * childComplexity
-}
