@@ -86,6 +86,8 @@
 - [ ] spf13/viper
 - [ ] jackc/pgx/v5/pgxpool / go-pg + pool - PG Pool
 - [ ] jackc/pgx https://www.youtube.com/watch?v=sXMSWhcHCf8
+  - [ ] https://github.com/jackc/pgxutil
+  - [ ] https://github.com/wcamarao/pmx
 - [ ] Masterminds/squirrel - SQL Builder (by Avito)
 - [ ] er := errgroup.Group{}; eg.SetLimit(limit) - ещё один примитив синхронизации (golang.org/x/sync/errgroup)
 - [ ] [Compile-time Dependency Injection for Go](https://github.com/google/wire)
@@ -114,6 +116,7 @@
 - [ ] https://github.com/cckwes/fiber-graphql-go
 - [ ] https://github.com/stretchr/testify
 - [ ] https://github.com/magefile/mage
+- [ ] https://github.com/davecgh/go-spew/spew
 
 ## Реализация
 
@@ -152,6 +155,7 @@ $ docker-compose up -d --build
 ### Stage 2
 
 - Поднять нагрузочное тестирование
+- Поднять мониторинг (uptrace etc.)
 
 ### Stage 3
 
