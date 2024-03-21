@@ -6,5 +6,5 @@ type Room struct {
 	Kind      RoomKindEnum `json:"kind"`
 	Name      *string      `json:"name,omitempty"`
 	UpdatedAt string       `json:"updatedAt"`
-	// Messages  []MessageUnion `json:"messages"`
+	// Messages  []MessageUnion `json:"messages" bun:"-"`
 }

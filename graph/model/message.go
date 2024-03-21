@@ -8,7 +8,7 @@ type Message struct {
 	RoomID    int    `json:"roomId"`
 	Text      string `json:"text"`
 	UpdatedAt string `json:"updatedAt"`
-	// Member    *Member `json:"member"`
+	// Member    *Member `json:"member" bun:"-"`
 }
 
 func (m Message) GetID() int {
