@@ -73,8 +73,7 @@ func getChatNames(ctx context.Context, keys []int) ([]string, []error) {
 	query := db.NewSelect().
 		Column("room_id", "members.name").
 		Table("room_members").
-		Join("JOIN members").
-		JoinOn("members.id = room_members.member_id").
+		Join("JOIN members ON members.id = member_id").
 		Where("room_id IN (?) AND member_id != ?", bun.In(keys), ForMemberID(ctx))
 	err := query.Scan(ctx, &dbRows)
 	if err != nil {
