@@ -1,18 +1,3 @@
-# rooms {
-#   id
-#   name
-#   kind
-#   messages {
-#     id
-#     text
-#     isRead
-#     member {
-#       id
-#       name
-#     }
-#   }
-# }
-
 type Query {
   rooms: [Room!]! 
 }
@@ -40,12 +25,12 @@ type Message {
 }
 
 type Room {
-  createdAt: timestamptz!
   id: Int!
-  kind: RoomKindEnum!
-  name: String
+  createdAt: timestamptz!
   updatedAt: timestamptz!
-  messages: [Message!]! # @goField(forceResolver: true)
+  name: String! @goField(forceResolver: true)
+  kind: RoomKindEnum!
+  messages: [Message!]! @goField(forceResolver: true)
 }
 
 scalar timestamptz
@@ -58,7 +43,7 @@ enum RoomKindEnum {
   PUBLIC_GROUP
 }
 
-# directive @goField(
-#     forceResolver: Boolean
-#     name: String
-# ) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
+directive @goField(
+    forceResolver: Boolean
+    name: String
+) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION

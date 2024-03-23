@@ -2,8 +2,18 @@ module nordkapp42
 
 go 1.21.7
 
+replace github.com/uptrace/bun => ../bun
+
+replace github.com/uptrace/bun/dbfixture => ../bun/dbfixture
+
+replace github.com/uptrace/bun/extra/bundebug => ../bun/extra/bundebug
+
+replace github.com/uptrace/bun/dialect/pgdialect => ../bun/dialect/pgdialect
+
+replace github.com/uptrace/bun/driver/sqliteshim => ../bun/driver/sqliteshim
+
 require (
-	github.com/99designs/gqlgen v0.17.44
+	github.com/99designs/gqlgen v0.17.45
 	github.com/lib/pq v1.10.9
 	github.com/uptrace/bun v1.1.17
 	github.com/uptrace/bun/dialect/pgdialect v1.1.17
@@ -33,9 +43,9 @@ require (
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	go.opentelemetry.io/otel v1.11.1 // indirect
 	go.opentelemetry.io/otel/trace v1.11.1 // indirect
-	golang.org/x/mod v0.14.0 // indirect
-	golang.org/x/sys v0.16.0 // indirect
+	golang.org/x/mod v0.16.0 // indirect
+	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
-	golang.org/x/tools v0.17.0 // indirect
+	golang.org/x/tools v0.19.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

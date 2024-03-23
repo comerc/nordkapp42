@@ -25,6 +25,13 @@ const ShutdownTimeout = time.Duration(10) * time.Second
 
 // TODO: Лучшей практикой при обработке контекстных ключей будет создание неэкспортируемого пользовательского типа: `type key string; const myCustomKey key = "key"; ctx := context.WithValue(context.Background(), myCustomKey, "val")`
 
+func WithMemberID(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.WithValue(r.Context(), "memberID", 1) // TODO: JWT Claims
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
 func WithDB(db *bun.DB) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -46,6 +53,7 @@ func NewAppHandler(db *bun.DB) *http.ServeMux {
 	// mux.Handle("/", playground.Handler("GraphQL playground", "/api"))
 	var h http.Handler
 	h = handler.NewGraphQLHandler()
+	h = WithMemberID(h)
 	h = WithDataLoader(h)
 	h = WithDB(db)(h)
 	mux.Handle("/api", h)

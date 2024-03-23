@@ -1,10 +1,10 @@
 package model
 
 type Room struct {
-	CreatedAt string       `json:"createdAt"`
-	ID        int          `json:"id"`
-	Kind      RoomKindEnum `json:"kind"`
-	Name      *string      `json:"name,omitempty"`
-	UpdatedAt string       `json:"updatedAt"`
-	// Messages  []MessageUnion `json:"messages" bun:"-"`
+	CreatedAt string
+	ID        int
+	Kind      RoomKindEnum
+	Name      string
+	UpdatedAt string
+	Messages  []Message `bun:"-"`
 }
