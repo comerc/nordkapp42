@@ -416,7 +416,7 @@ $ rover graph introspect --header "X-Hasura-Admin-Secret: myadminsecretkey" http
 
 ***
 
-## Соглашения
+## Соглашения 
 
 - Таблицы именуются во множественном числе.
 - Переименования в metadata для соответствия GraphQL-типов. 
@@ -425,6 +425,7 @@ $ rover graph introspect --header "X-Hasura-Admin-Secret: myadminsecretkey" http
 - Поля id, created_by, updated_by в начале каждой таблицы сущности.
 - Enum-таблицы имеют одно поле с именем value, именуются в единственном числе.
 - Поле id инкрементится через identity.
+- Не следует использовать (bun.DB).NewRaw() - для него не работает логирование.
 
 ## Схема БД
 
@@ -449,43 +450,6 @@ $ rover graph introspect --header "X-Hasura-Admin-Secret: myadminsecretkey" http
 - room_members
   - member_id
   - room_id
-
-```sql
-CREATE
-OR REPLACE VIEW "public"."chat_rooms" AS
-SELECT
-  rooms.id AS room_id,
-  room_members.member_id
-FROM
-  rooms,
-  room_members
-WHERE
-  (
-    rooms.id IN (SELECT
-      rooms.id AS room_id,
-    FROM
-      rooms,
-      room_members
-    WHERE
-      (
-        (rooms.kind = 'CHAT' :: text)
-        AND (rooms.id = room_members.room_id)
-        AND room_members.member_id == session_variables->>'x-hasura-user-id'
-      )
-    )
-    AND (rooms.id = room_members.room_id)
-    AND room_members.member_id != session_variables->>'x-hasura-user-id'
-  );
-
-CREATE
-OR REPLACE VIEW "public"."more_rooms" AS
-SELECT
-  rooms.id AS room_id
-FROM
-  rooms
-WHERE
-  (rooms.kind <> 'CHAT' :: text);
-```
 
 ## How to get JWT
 
