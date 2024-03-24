@@ -51,12 +51,10 @@ func fetchManyMessages(ctx context.Context, keys []int) ([][]*model.Message, []e
 	if err != nil {
 		return [][]*model.Message{}, []error{err}
 	}
-	// Mapping message IDs to messages for quick lookup.
 	m := make(map[int][]*model.Message)
 	for _, dbModel := range dbModels {
 		m[dbModel.RoomID] = append(m[dbModel.RoomID], dbModel)
 	}
-	// Reassembling the results in the order of keys.
 	models := make([][]*model.Message, len(keys))
 	errors := make([]error, len(keys))
 	for i, key := range keys {
@@ -76,7 +74,7 @@ func fetchModels[T comparable, M model.Model[T]](getDBModels GetDBModelsFn[T, M]
 		if err != nil {
 			return dbModels, []error{err}
 		}
-		// Mapping message IDs to messages for quick lookup.
+		// Mapping model IDs to models for quick lookup.
 		m := make(map[T]*M)
 		for _, dbModel := range dbModels {
 			m[(*dbModel).GetID()] = dbModel
