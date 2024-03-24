@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -25,12 +26,44 @@ const ShutdownTimeout = time.Duration(10) * time.Second
 
 // TODO: Лучшей практикой при обработке контекстных ключей будет создание неэкспортируемого пользовательского типа: `type key string; const myCustomKey key = "key"; ctx := context.WithValue(context.Background(), myCustomKey, "val")`
 
-func WithMemberID(next http.Handler) http.Handler {
+func tokenFromHeader(r *http.Request) string {
+	bearer := r.Header.Get("Authorization")
+	if len(bearer) > 7 && strings.ToUpper(bearer[0:6]) == "BEARER" {
+		return bearer[7:]
+	}
+	return ""
+}
+
+func WithAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := context.WithValue(r.Context(), "memberID", 1) // TODO: JWT Claims
+		// raw := tokenFromHeader(r)
+
+		// if auth is not available then proceed to resolver
+		// if raw == "" {
+		// 	next.ServeHTTP(w, r)
+		// } else {
+		// 	_, err := jwt.ValidateJWT(raw)
+		// 	memberID := 1
+		// 	if err != nil {
+		// 		next.ServeHTTP(w, r)
+		// 	} else {
+		// 		ctx := context.WithValue(r.Context(), "memberID", memberID)
+		// 		next.ServeHTTP(w, r.WithContext(ctx))
+		// 	}
+		// }
+
+		ctx := context.WithValue(r.Context(), "memberID", 2)
 		next.ServeHTTP(w, r.WithContext(ctx))
+
 	})
 }
+
+// func WithMemberID(next http.Handler) http.Handler {
+// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// 		ctx := context.WithValue(r.Context(), "memberID", 1) // TODO: JWT Claims
+// 		next.ServeHTTP(w, r.WithContext(ctx))
+// 	})
+// }
 
 func WithDB(db *bun.DB) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
@@ -53,7 +86,7 @@ func NewAppHandler(db *bun.DB) *http.ServeMux {
 	// mux.Handle("/", playground.Handler("GraphQL playground", "/api"))
 	var h http.Handler
 	h = handler.NewGraphQLHandler()
-	h = WithMemberID(h)
+	h = WithAuth(h)
 	h = WithDataLoader(h)
 	h = WithDB(db)(h)
 	mux.Handle("/api", h)

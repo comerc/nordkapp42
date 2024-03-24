@@ -4,8 +4,10 @@ package handler
 import (
 	"context"
 	"log"
-	"nordkapp42/graph"
 	"time"
+
+	"nordkapp42/graph"
+	"nordkapp42/graph/directive"
 
 	gqlhandler "github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
@@ -61,6 +63,7 @@ func NewGraphQLHandler() *gqlhandler.Server {
 
 func newSchemaConfig() graph.Config {
 	cfg := graph.Config{Resolvers: &graph.Resolver{}}
+	cfg.Directives.Auth = directive.Auth
 	cfg.Complexity.Query.Rooms = graph.QueryRoomsComplexity
 	cfg.Complexity.Subscription.Rooms = graph.SubscriptionRoomsComplexity
 	cfg.Complexity.Room.Messages = graph.RoomMessagesComplexity

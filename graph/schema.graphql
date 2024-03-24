@@ -1,9 +1,9 @@
 type Query {
-  rooms: [Room!]! 
+  rooms: [Room!]! @auth
 }
 
 type Subscription {
-  rooms: [Room!]! 
+  rooms: [Room!]! @auth
 }
 
 type Member {
@@ -21,16 +21,21 @@ type Message {
   roomId: Int!
   text: String!
   updatedAt: timestamptz!
-  member: Member! # @goField(forceResolver: true)
+  member: Member! @goField(forceResolver: true)
 }
 
 type Room {
   id: Int!
   createdAt: timestamptz!
   updatedAt: timestamptz!
-  name: String! @goField(forceResolver: true)
+  props: RoomProps! @goField(forceResolver: true)
   kind: RoomKindEnum!
   messages: [Message!]! @goField(forceResolver: true)
+
+}
+
+type RoomProps {
+  name: String!
 }
 
 scalar timestamptz
@@ -47,3 +52,5 @@ directive @goField(
     forceResolver: Boolean
     name: String
 ) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
+
+directive @auth on FIELD_DEFINITION

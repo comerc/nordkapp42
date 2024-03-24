@@ -14,6 +14,7 @@ replace github.com/uptrace/bun/driver/sqliteshim => ../bun/driver/sqliteshim
 
 require (
 	github.com/99designs/gqlgen v0.17.45
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/lib/pq v1.10.9
 	github.com/uptrace/bun v1.1.17
 	github.com/uptrace/bun/dialect/pgdialect v1.1.17

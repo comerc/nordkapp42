@@ -8,6 +8,8 @@ import (
 	"context"
 	"fmt"
 	"nordkapp42/graph/model"
+
+	"github.com/vikstrous/dataloadgen"
 )
 
 // Member is the resolver for the member field.
@@ -24,7 +26,7 @@ func (r *queryResolver) Rooms(ctx context.Context) ([]*model.Room, error) {
 		Column("rooms.*").
 		Table("rooms").
 		Join("JOIN room_members AS t").
-		JoinOn("t.room_id = rooms.id").
+		JoinOn("t.room_id = id").
 		JoinOn("t.member_id = ?", ForMemberID(ctx))
 	// if limit != nil {
 	// 	query = query.Limit(*limit)
@@ -38,13 +40,15 @@ func (r *queryResolver) Rooms(ctx context.Context) ([]*model.Room, error) {
 	return rooms, nil
 }
 
-// Name is the resolver for the name field.
-func (r *roomResolver) Name(ctx context.Context, room *model.Room) (string, error) {
-	if room.Kind == model.RoomKindEnumChat {
-		loader := ForLoaders(ctx).ChatNameLoader
-		return loader.Load(ctx, room.ID)
+// Props is the resolver for the props field.
+func (r *roomResolver) Props(ctx context.Context, obj *model.Room) (*model.RoomProps, error) {
+	var loader *dataloadgen.Loader[int, *model.RoomProps]
+	if obj.Kind == model.RoomKindEnumChat {
+		loader = ForLoaders(ctx).ChatRoomPropsLoader
+	} else {
+		loader = ForLoaders(ctx).CommonRoomPropsLoader
 	}
-	return room.Name, nil
+	return loader.Load(ctx, obj.ID)
 }
 
 // Messages is the resolver for the messages field.

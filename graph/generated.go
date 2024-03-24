@@ -47,6 +47,7 @@ type ResolverRoot interface {
 }
 
 type DirectiveRoot struct {
+	Auth func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
 }
 
 type ComplexityRoot struct {
@@ -77,8 +78,12 @@ type ComplexityRoot struct {
 		ID        func(childComplexity int) int
 		Kind      func(childComplexity int) int
 		Messages  func(childComplexity int) int
-		Name      func(childComplexity int) int
+		Props     func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
+	}
+
+	RoomProps struct {
+		Name func(childComplexity int) int
 	}
 
 	Subscription struct {
@@ -93,7 +98,7 @@ type QueryResolver interface {
 	Rooms(ctx context.Context) ([]*model.Room, error)
 }
 type RoomResolver interface {
-	Name(ctx context.Context, obj *model.Room) (string, error)
+	Props(ctx context.Context, obj *model.Room) (*model.RoomProps, error)
 
 	Messages(ctx context.Context, obj *model.Room) ([]*model.Message, error)
 }
@@ -239,12 +244,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Room.Messages(childComplexity), true
 
-	case "Room.name":
-		if e.complexity.Room.Name == nil {
+	case "Room.props":
+		if e.complexity.Room.Props == nil {
 			break
 		}
 
-		return e.complexity.Room.Name(childComplexity), true
+		return e.complexity.Room.Props(childComplexity), true
 
 	case "Room.updatedAt":
 		if e.complexity.Room.UpdatedAt == nil {
@@ -252,6 +257,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Room.UpdatedAt(childComplexity), true
+
+	case "RoomProps.name":
+		if e.complexity.RoomProps.Name == nil {
+			break
+		}
+
+		return e.complexity.RoomProps.Name(childComplexity), true
 
 	case "Subscription.rooms":
 		if e.complexity.Subscription.Rooms == nil {
@@ -989,8 +1001,28 @@ func (ec *executionContext) _Query_rooms(ctx context.Context, field graphql.Coll
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Rooms(rctx)
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().Rooms(rctx)
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.([]*model.Room); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*nordkapp42/graph/model.Room`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1021,8 +1053,8 @@ func (ec *executionContext) fieldContext_Query_rooms(ctx context.Context, field 
 				return ec.fieldContext_Room_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_Room_updatedAt(ctx, field)
-			case "name":
-				return ec.fieldContext_Room_name(ctx, field)
+			case "props":
+				return ec.fieldContext_Room_props(ctx, field)
 			case "kind":
 				return ec.fieldContext_Room_kind(ctx, field)
 			case "messages":
@@ -1295,8 +1327,8 @@ func (ec *executionContext) fieldContext_Room_updatedAt(ctx context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _Room_name(ctx context.Context, field graphql.CollectedField, obj *model.Room) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Room_name(ctx, field)
+func (ec *executionContext) _Room_props(ctx context.Context, field graphql.CollectedField, obj *model.Room) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Room_props(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1309,7 +1341,7 @@ func (ec *executionContext) _Room_name(ctx context.Context, field graphql.Collec
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Room().Name(rctx, obj)
+		return ec.resolvers.Room().Props(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1321,19 +1353,23 @@ func (ec *executionContext) _Room_name(ctx context.Context, field graphql.Collec
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*model.RoomProps)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNRoomProps2ᚖnordkapp42ᚋgraphᚋmodelᚐRoomProps(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Room_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Room_props(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Room",
 		Field:      field,
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			switch field.Name {
+			case "name":
+				return ec.fieldContext_RoomProps_name(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type RoomProps", field.Name)
 		},
 	}
 	return fc, nil
@@ -1445,6 +1481,50 @@ func (ec *executionContext) fieldContext_Room_messages(ctx context.Context, fiel
 	return fc, nil
 }
 
+func (ec *executionContext) _RoomProps_name(ctx context.Context, field graphql.CollectedField, obj *model.RoomProps) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_RoomProps_name(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_RoomProps_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "RoomProps",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Subscription_rooms(ctx context.Context, field graphql.CollectedField) (ret func(ctx context.Context) graphql.Marshaler) {
 	fc, err := ec.fieldContext_Subscription_rooms(ctx, field)
 	if err != nil {
@@ -1458,8 +1538,28 @@ func (ec *executionContext) _Subscription_rooms(ctx context.Context, field graph
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().Rooms(rctx)
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Subscription().Rooms(rctx)
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(<-chan []*model.Room); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be <-chan []*nordkapp42/graph/model.Room`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1504,8 +1604,8 @@ func (ec *executionContext) fieldContext_Subscription_rooms(ctx context.Context,
 				return ec.fieldContext_Room_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_Room_updatedAt(ctx, field)
-			case "name":
-				return ec.fieldContext_Room_name(ctx, field)
+			case "props":
+				return ec.fieldContext_Room_props(ctx, field)
 			case "kind":
 				return ec.fieldContext_Room_kind(ctx, field)
 			case "messages":
@@ -3555,7 +3655,7 @@ func (ec *executionContext) _Room(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
-		case "name":
+		case "props":
 			field := field
 
 			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
@@ -3564,7 +3664,7 @@ func (ec *executionContext) _Room(ctx context.Context, sel ast.SelectionSet, obj
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Room_name(ctx, field, obj)
+				res = ec._Room_props(ctx, field, obj)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -3632,6 +3732,45 @@ func (ec *executionContext) _Room(ctx context.Context, sel ast.SelectionSet, obj
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var roomPropsImplementors = []string{"RoomProps"}
+
+func (ec *executionContext) _RoomProps(ctx context.Context, sel ast.SelectionSet, obj *model.RoomProps) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, roomPropsImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("RoomProps")
+		case "name":
+			out.Values[i] = ec._RoomProps_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4161,6 +4300,20 @@ func (ec *executionContext) unmarshalNRoomKindEnum2nordkapp42ᚋgraphᚋmodelᚐ
 
 func (ec *executionContext) marshalNRoomKindEnum2nordkapp42ᚋgraphᚋmodelᚐRoomKindEnum(ctx context.Context, sel ast.SelectionSet, v model.RoomKindEnum) graphql.Marshaler {
 	return v
+}
+
+func (ec *executionContext) marshalNRoomProps2nordkapp42ᚋgraphᚋmodelᚐRoomProps(ctx context.Context, sel ast.SelectionSet, v model.RoomProps) graphql.Marshaler {
+	return ec._RoomProps(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNRoomProps2ᚖnordkapp42ᚋgraphᚋmodelᚐRoomProps(ctx context.Context, sel ast.SelectionSet, v *model.RoomProps) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._RoomProps(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
