@@ -27,23 +27,33 @@ type Loaders struct {
 func NewLoaders() *Loaders {
 	// define the data loaders
 	return &Loaders{
-		MessageLoader:         dataloadgen.NewLoader(getModels[int, model.Message]("id"), dataloadgen.WithWait(time.Millisecond)),
-		MemberLoader:          dataloadgen.NewLoader(getModels[int, model.Member]("id"), dataloadgen.WithWait(time.Millisecond)),
-		ChatRoomPropsLoader:   dataloadgen.NewLoader(getChatRoomProps, dataloadgen.WithWait(time.Millisecond)),
-		CommonRoomPropsLoader: dataloadgen.NewLoader(getModels[int, model.RoomProps]("room_id"), dataloadgen.WithWait(time.Millisecond)),
+		MessageLoader: dataloadgen.NewLoader(
+			fetchModels(getDBModels[int, model.Message]("id")),
+			dataloadgen.WithWait(time.Millisecond),
+		),
+		MemberLoader: dataloadgen.NewLoader(
+			fetchModels(getDBModels[int, model.Member]("id")),
+			dataloadgen.WithWait(time.Millisecond),
+		),
+		CommonRoomPropsLoader: dataloadgen.NewLoader(
+			fetchModels(getDBModels[int, model.RoomProps]("room_id")),
+			dataloadgen.WithWait(time.Millisecond),
+		),
+		ChatRoomPropsLoader: dataloadgen.NewLoader(
+			fetchModels(getChatRoomProps[int, model.RoomProps]),
+			dataloadgen.WithWait(time.Millisecond),
+		),
 	}
 }
 
-func getModels[T comparable, M model.Model[T]](idIdent string) func(ctx context.Context, keys []T) ([]*M, []error) {
+type FetchModelsFn[T comparable, M model.Model[T]] func(ctx context.Context, keys []T) ([]*M, []error)
+type GetDBModelsFn[T comparable, M model.Model[T]] func(ctx context.Context, keys []T) ([]*M, error)
+
+func fetchModels[T comparable, M model.Model[T]](getDBModels GetDBModelsFn[T, M]) FetchModelsFn[T, M] {
 	return func(ctx context.Context, keys []T) ([]*M, []error) {
-		var dbModels []*M
-		// Using Bun, we adjust the query method to fit Bun's API.
-		// Bun's handling of `WhereIn` is similar to go-pg, but ensure you're using the correct
-		// query method calls for Bun.
-		db := ForDB(ctx)
-		err := db.NewSelect().Model(&dbModels).Where("? IN (?)", bun.Ident(idIdent), bun.In(keys)).Scan(ctx)
+		dbModels, err := getDBModels(ctx, keys)
 		if err != nil {
-			return []*M{}, []error{err}
+			return dbModels, []error{err}
 		}
 		// Mapping message IDs to messages for quick lookup.
 		m := make(map[T]*M)
@@ -64,39 +74,30 @@ func getModels[T comparable, M model.Model[T]](idIdent string) func(ctx context.
 	}
 }
 
-func getChatRoomProps(ctx context.Context, keys []int) ([]*model.RoomProps, []error) {
-	type dbRow struct {
-		RoomID int
-		Name   string
+func getDBModels[T comparable, M model.Model[T]](idName string) GetDBModelsFn[T, M] {
+	return func(ctx context.Context, keys []T) ([]*M, error) {
+		var dbModels []*M
+		db := ForDB(ctx)
+		// Using Bun, we adjust the query method to fit Bun's API.
+		// Bun's handling of `WhereIn` is similar to go-pg, but ensure you're using the correct
+		// query method calls for Bun.
+		query := db.NewSelect().Model(&dbModels).Where("? IN (?)", bun.Ident(idName), bun.In(keys))
+		err := query.Scan(ctx)
+		return dbModels, err
 	}
-	var dbRows []*dbRow
+}
+
+func getChatRoomProps[T comparable, M model.Model[T]](ctx context.Context, keys []T) ([]*M, error) {
+	var dbModels []*M
+	db := ForDB(ctx)
 	// Using Bun, we adjust the query method to fit Bun's API.
 	// Bun's handling of `WhereIn` is similar to go-pg, but ensure you're using the correct
 	// query method calls for Bun.
-	db := ForDB(ctx)
 	query := db.NewSelect().
 		Column("room_id", "members.name").
 		Table("room_members").
 		Join("JOIN members ON members.id = member_id").
 		Where("room_id IN (?) AND member_id != ?", bun.In(keys), ForMemberID(ctx))
-	err := query.Scan(ctx, &dbRows)
-	if err != nil {
-		return []*model.RoomProps{}, []error{err}
-	}
-	// Mapping message IDs to messages for quick lookup.
-	m := make(map[int]*dbRow)
-	for _, dbRow := range dbRows {
-		m[dbRow.RoomID] = dbRow
-	}
-	// Reassembling the results in the order of keys.
-	props := make([]*model.RoomProps, len(keys))
-	errors := make([]error, len(keys))
-	for i, key := range keys {
-		if dbRow, ok := m[key]; ok {
-			props[i] = &model.RoomProps{Name: dbRow.Name}
-		} else {
-			errors[i] = fmt.Errorf("no element found for key: %v", key)
-		}
-	}
-	return props, errors
+	err := query.Scan(ctx, &dbModels)
+	return dbModels, err
 }
