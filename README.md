@@ -117,6 +117,7 @@
 - [ ] https://github.com/stretchr/testify
 - [ ] https://github.com/magefile/mage
 - [ ] https://github.com/davecgh/go-spew/spew
+- [ ] https://habr.com/ru/articles/672250/
 
 ## Реализация
 
