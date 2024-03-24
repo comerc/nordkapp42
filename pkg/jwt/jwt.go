@@ -2,53 +2,33 @@ package jwt
 
 import (
 	"errors"
-	"fmt"
+	"strconv"
 
 	"github.com/golang-jwt/jwt"
 )
 
-const JwtSecret = "30b50d8699c8b71ea291f453877e5dec"
+const JwtSecret = "30b50d8699c8b71ea291f453877e5dec" // TODO: вынести в env
 
 func ValidateJWT(raw string) (int, error) {
 	token, err := jwt.Parse(raw, func(token *jwt.Token) (any, error) {
 		// do not try to validate iat
-		mapClaims := token.Claims.(jwt.MapClaims)
-		delete(mapClaims, "iat")
+		// mapClaims := token.Claims.(jwt.MapClaims)
+		// delete(mapClaims, "iat")
 		return []byte(JwtSecret), nil
 	})
 	if err != nil {
-		return -1, err
+		return 0, err
 	}
 	if !token.Valid {
-		return -1, errors.New("invalid JWT token")
+		return 0, errors.New("invalid JWT token")
 	}
-	claims, ok := token.Claims.(jwt.MapClaims)
+	mapClaims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		return -1, errors.New("decode JWT token map claims failed")
+		return 0, errors.New("decode JWT token to mapClaims failed")
 	}
-	fmt.Printf("%#v", claims)
-
-	// if claims, ok := token.Claims.(*Claims); ok && token.Valid {
-	// 	fmt.Printf("%#v", claims)
-	// 	// fmt.Println((*jwt.MapClaims)(claims)["myCustomField"])
-	// } else {
-	// 	fmt.Println(err)
-	// }
-
-	// token, err := jwt.ParseWithClaims(jwtToken, &Claims{}, func(token *jwt.Token) (any, error) {
-	// 	if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-	// 		return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-	// 	}
-	// 	return JwtSecret, nil
-	// })
-	// if err != nil {
-	// 	return -1, errors.New("JWT parsed failed")
-	// }
-	// claims, ok := token.Claims.(*Claims)
-	// if ok && token.Valid {
-	// 	fmt.Printf("%#v", claims)
-	// 	return 1, nil
-	// }
-	// return -1, errors.New("JWT claims failed")
-	return 1, nil
+	hasuraClaims, ok := mapClaims["https://hasura.io/jwt/claims"].(map[string]any)
+	if !ok {
+		return 0, errors.New("decode JWT token to hasuraClaims failed")
+	}
+	return strconv.Atoi(hasuraClaims["x-hasura-user-id"].(string))
 }

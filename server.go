@@ -19,6 +19,7 @@ import (
 
 	"nordkapp42/graph"
 	"nordkapp42/http/handler"
+	"nordkapp42/pkg/jwt"
 )
 
 const Addr = ":8888"
@@ -36,24 +37,23 @@ func tokenFromHeader(r *http.Request) string {
 
 func WithAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// raw := tokenFromHeader(r)
+		raw := tokenFromHeader(r)
 
 		// if auth is not available then proceed to resolver
-		// if raw == "" {
-		// 	next.ServeHTTP(w, r)
-		// } else {
-		// 	_, err := jwt.ValidateJWT(raw)
-		// 	memberID := 1
-		// 	if err != nil {
-		// 		next.ServeHTTP(w, r)
-		// 	} else {
-		// 		ctx := context.WithValue(r.Context(), "memberID", memberID)
-		// 		next.ServeHTTP(w, r.WithContext(ctx))
-		// 	}
-		// }
+		if raw == "" {
+			next.ServeHTTP(w, r)
+		} else {
+			memberID, err := jwt.ValidateJWT(raw)
+			if err != nil {
+				next.ServeHTTP(w, r)
+			} else {
+				ctx := context.WithValue(r.Context(), "memberID", memberID)
+				next.ServeHTTP(w, r.WithContext(ctx))
+			}
+		}
 
-		ctx := context.WithValue(r.Context(), "memberID", 2)
-		next.ServeHTTP(w, r.WithContext(ctx))
+		// ctx := context.WithValue(r.Context(), "memberID", 2)
+		// next.ServeHTTP(w, r.WithContext(ctx))
 
 	})
 }

@@ -11,5 +11,9 @@ func ForDB(ctx context.Context) *bun.DB {
 }
 
 func ForMemberID(ctx context.Context) int {
-	return ctx.Value("memberID").(int)
+	res, dummy := ctx.Value("memberID").(int)
+	_ = dummy
+	// без dummy при отсутствии memberID:
+	// "interface conversion: interface {} is nil, not int"
+	return res
 }

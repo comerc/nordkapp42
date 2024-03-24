@@ -2,19 +2,18 @@ package directive
 
 import (
 	"context"
+	"errors"
 
 	"github.com/99designs/gqlgen/graphql"
+
+	"nordkapp42/graph"
 )
 
 func Auth(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
-	// memberID := ctx.Value("memberID")
-	// fmt.Println("*************")
-	// fmt.Printf("%#v\n", memberID)
-	// fmt.Println("*************")
-	// // if memberID != nil {
-	// // return next(ctx)
-	// // } else {
-	// return nil, errors.New("Unauthorised")
-	// }
-	return next(ctx)
+	memberID := graph.ForMemberID(ctx)
+	if memberID != 0 {
+		return next(ctx)
+	} else {
+		return nil, errors.New("Unauthorised")
+	}
 }
