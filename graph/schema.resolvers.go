@@ -53,10 +53,9 @@ func (r *roomResolver) Props(ctx context.Context, obj *model.Room) (*model.RoomP
 
 // Messages is the resolver for the messages field.
 func (r *roomResolver) Messages(ctx context.Context, obj *model.Room) ([]*model.Message, error) {
-	messageIDs := []int{2, 3}
-	loader := ForLoaders(ctx).MessageLoader
-	messages, errorSlice := loader.LoadAll(ctx, messageIDs)
-	return messages, errorSlice
+	loader := ForLoaders(ctx).ManyMessagesLoader
+	messages, err := loader.Load(ctx, obj.ID)
+	return messages, err
 }
 
 // Rooms is the resolver for the rooms field.

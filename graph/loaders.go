@@ -17,7 +17,7 @@ func ForLoaders(ctx context.Context) *Loaders {
 
 // Loaders wrap your data loaders to inject via middleware
 type Loaders struct {
-	MessageLoader         *dataloadgen.Loader[int, *model.Message]
+	ManyMessagesLoader    *dataloadgen.Loader[int, []*model.Message]
 	MemberLoader          *dataloadgen.Loader[int, *model.Member]
 	ChatRoomPropsLoader   *dataloadgen.Loader[int, *model.RoomProps]
 	CommonRoomPropsLoader *dataloadgen.Loader[int, *model.RoomProps]
@@ -27,8 +27,8 @@ type Loaders struct {
 func NewLoaders() *Loaders {
 	// define the data loaders
 	return &Loaders{
-		MessageLoader: dataloadgen.NewLoader(
-			fetchModels(getDBModels[int, model.Message]("id")),
+		ManyMessagesLoader: dataloadgen.NewLoader(
+			fetchManyMessages,
 			dataloadgen.WithWait(time.Millisecond),
 		),
 		MemberLoader: dataloadgen.NewLoader(
@@ -44,6 +44,27 @@ func NewLoaders() *Loaders {
 			dataloadgen.WithWait(time.Millisecond),
 		),
 	}
+}
+
+func fetchManyMessages(ctx context.Context, keys []int) ([][]*model.Message, []error) {
+	dbModels, err := getDBModels[int, model.Message]("room_id")(ctx, keys)
+	if err != nil {
+		return [][]*model.Message{}, []error{err}
+	}
+	// Mapping message IDs to messages for quick lookup.
+	m := make(map[int][]*model.Message)
+	for _, dbModel := range dbModels {
+		m[dbModel.RoomID] = append(m[dbModel.RoomID], dbModel)
+	}
+	// Reassembling the results in the order of keys.
+	models := make([][]*model.Message, len(keys))
+	errors := make([]error, len(keys))
+	for i, key := range keys {
+		if model, ok := m[key]; ok {
+			models[i] = model
+		}
+	}
+	return models, errors
 }
 
 type FetchModelsFn[T comparable, M model.Model[T]] func(ctx context.Context, keys []T) ([]*M, []error)
@@ -78,9 +99,6 @@ func getDBModels[T comparable, M model.Model[T]](idName string) GetDBModelsFn[T,
 	return func(ctx context.Context, keys []T) ([]*M, error) {
 		var dbModels []*M
 		db := ForDB(ctx)
-		// Using Bun, we adjust the query method to fit Bun's API.
-		// Bun's handling of `WhereIn` is similar to go-pg, but ensure you're using the correct
-		// query method calls for Bun.
 		query := db.NewSelect().Model(&dbModels).Where("? IN (?)", bun.Ident(idName), bun.In(keys))
 		err := query.Scan(ctx)
 		return dbModels, err
@@ -90,9 +108,6 @@ func getDBModels[T comparable, M model.Model[T]](idName string) GetDBModelsFn[T,
 func getChatRoomProps[T comparable, M model.Model[T]](ctx context.Context, keys []T) ([]*M, error) {
 	var dbModels []*M
 	db := ForDB(ctx)
-	// Using Bun, we adjust the query method to fit Bun's API.
-	// Bun's handling of `WhereIn` is similar to go-pg, but ensure you're using the correct
-	// query method calls for Bun.
 	query := db.NewSelect().
 		Column("room_id", "members.name").
 		Table("room_members").

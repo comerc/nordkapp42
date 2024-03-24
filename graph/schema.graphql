@@ -31,7 +31,6 @@ type Room {
   props: RoomProps! @goField(forceResolver: true)
   kind: RoomKindEnum!
   messages: [Message!]! @goField(forceResolver: true)
-
 }
 
 type RoomProps {
