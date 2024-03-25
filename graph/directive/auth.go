@@ -11,7 +11,7 @@ import (
 
 func Auth(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
 	payload := jwt.GetPayload(ctx)
-	if jwt.IsExpired(payload) {
+	if payload.IsExpired() {
 		return nil, errors.New("JWT was expired")
 	}
 	if payload.MemberID == 0 {

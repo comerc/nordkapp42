@@ -60,7 +60,7 @@ func ParsePayload(raw string) (*Payload, error) {
 	return &res, nil
 }
 
-func IsExpired(payload Payload) bool {
+func (payload Payload) IsExpired() bool {
 	return payload.IssuedAt < time.Now().Add(-10*time.Minute).Unix()
 }
 

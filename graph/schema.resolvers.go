@@ -78,7 +78,7 @@ func (r *subscriptionResolver) CurrentTime(ctx context.Context) (<-chan *model.T
 		defer close(ch)
 		flag := true
 		for {
-			if jwt.IsExpired(jwt.GetPayload(ctx)) {
+			if jwt.GetPayload(ctx).IsExpired() {
 				transport.AddSubscriptionError(ctx, gqlerror.Errorf("JWT was expired"))
 				return
 			}
@@ -103,7 +103,6 @@ func (r *subscriptionResolver) CurrentTime(ctx context.Context) (<-chan *model.T
 			select {
 			case <-ctx.Done(): // This runs when context gets cancelled. Subscription closes.
 				fmt.Println("Subscription Closed")
-
 				// Handle deregistration of the channel here. `close(ch)`
 				return // Remember to return to end the routine.
 			case ch <- t: // This is the actual send.
