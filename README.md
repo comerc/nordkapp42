@@ -108,7 +108,7 @@
 - [ ] https://github.com/bufbuild/buf (вместо protoc для gRPC)
 - [ ] https://github.com/mailhog/MailHog для тестирования почты
 - [ ] https://github.com/IBM/sarama
-- [ ] [настройки CORS](https://habr.com/ru/articles/598359/)
+- [ ] [настройки CORS](https://habr.com/ru/articles/598359/) [2](https://gqlgen.com/recipes/cors/) [3](https://gqlgen.com/recipes/authentication/)
 - [ ] [Boilerplate for Go REST API with PostgreSQL database](https://github.com/comerc/go-api-boilerplate)
 - [ ] [PostGraphile - Instant lightning-fast GraphQL API backed primarily by your PostgreSQL database.](https://github.com/graphile/crystal/tree/main/postgraphile/postgraphile)
 - [ ] [dataloader на дженериках](https://github.com/vikstrous/dataloadgen) - [example](https://github.com/stasundr/gqlgen-pg-todo-example)
@@ -118,6 +118,7 @@
 - [ ] https://github.com/magefile/mage
 - [ ] https://github.com/davecgh/go-spew/spew
 - [ ] https://habr.com/ru/articles/672250/
+- [ ] https://github.com/RobinCPel/graphql-postman
 
 ## Реализация
 

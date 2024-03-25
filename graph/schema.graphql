@@ -4,7 +4,13 @@ type Query {
 
 type Subscription {
   rooms: [Room!]! @auth
+  currentTime: Time!
 }
+
+# TODO: https://github.com/99designs/gqlgen/issues/774#issuecomment-1022246731
+# type Mutation {
+#   RefreshToken($token)
+# }
 
 type Member {
   createdAt: timestamptz!
@@ -35,6 +41,11 @@ type Room {
 
 type RoomProps {
   name: String!
+}
+
+type Time {
+  unixTime: Int!
+  timeStamp: String!
 }
 
 scalar timestamptz

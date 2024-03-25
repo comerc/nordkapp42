@@ -3,11 +3,19 @@ package jwt
 import (
 	"errors"
 	"strconv"
+	"strings"
 
 	"github.com/golang-jwt/jwt"
 )
 
 const JwtSecret = "30b50d8699c8b71ea291f453877e5dec" // TODO: вынести в env
+
+func TrimBearer(authValue string) string {
+	if len(authValue) > 7 && strings.ToUpper(authValue[0:6]) == "BEARER" {
+		return authValue[7:]
+	}
+	return ""
+}
 
 func ValidateJWT(raw string) (int, error) {
 	token, err := jwt.Parse(raw, func(token *jwt.Token) (any, error) {

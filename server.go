@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 	"time"
 
@@ -27,34 +27,21 @@ const ShutdownTimeout = time.Duration(10) * time.Second
 
 // TODO: Лучшей практикой при обработке контекстных ключей будет создание неэкспортируемого пользовательского типа: `type key string; const myCustomKey key = "key"; ctx := context.WithValue(context.Background(), myCustomKey, "val")`
 
-func tokenFromHeader(r *http.Request) string {
-	bearer := r.Header.Get("Authorization")
-	if len(bearer) > 7 && strings.ToUpper(bearer[0:6]) == "BEARER" {
-		return bearer[7:]
-	}
-	return ""
-}
-
 func WithAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		raw := tokenFromHeader(r)
-
-		// if auth is not available then proceed to resolver
+		fmt.Println("*****WithAuth*****")
+		raw := jwt.TrimBearer(r.Header.Get("Authorization"))
 		if raw == "" {
 			next.ServeHTTP(w, r)
-		} else {
-			memberID, err := jwt.ValidateJWT(raw)
-			if err != nil {
-				next.ServeHTTP(w, r)
-			} else {
-				ctx := context.WithValue(r.Context(), "memberID", memberID)
-				next.ServeHTTP(w, r.WithContext(ctx))
-			}
+			return
 		}
-
-		// ctx := context.WithValue(r.Context(), "memberID", 2)
-		// next.ServeHTTP(w, r.WithContext(ctx))
-
+		memberID, err := jwt.ValidateJWT(raw)
+		if err != nil {
+			next.ServeHTTP(w, r)
+			return
+		}
+		ctx := context.WithValue(r.Context(), "memberID", memberID)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
