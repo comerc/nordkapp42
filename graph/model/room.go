@@ -4,9 +4,9 @@ type Room struct {
 	CreatedAt string
 	ID        int
 	Kind      RoomKindEnum
-	Props     RoomProps `bun:"-"`
+	Props     *RoomProps `bun:"-"`
 	UpdatedAt string
-	Messages  []Message `bun:"-"`
+	Messages  []*Message `bun:"-"`
 }
 
 type RoomProps struct {
