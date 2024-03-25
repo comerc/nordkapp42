@@ -56,13 +56,12 @@ func fetchManyMessages(ctx context.Context, keys []int) ([][]*model.Message, []e
 		m[dbModel.RoomID] = append(m[dbModel.RoomID], dbModel)
 	}
 	models := make([][]*model.Message, len(keys))
-	errors := make([]error, len(keys))
 	for i, key := range keys {
 		if model, ok := m[key]; ok {
 			models[i] = model
 		}
 	}
-	return models, errors
+	return models, nil
 }
 
 type FetchModelsFn[T comparable, M model.Model[T]] func(ctx context.Context, keys []T) ([]*M, []error)
@@ -97,7 +96,9 @@ func getDBModels[T comparable, M model.Model[T]](idName string) GetDBModelsFn[T,
 	return func(ctx context.Context, keys []T) ([]*M, error) {
 		var dbModels []*M
 		db := ForDB(ctx)
-		query := db.NewSelect().Model(&dbModels).Where("? IN (?)", bun.Ident(idName), bun.In(keys))
+		query := db.NewSelect().
+			Model(&dbModels).
+			Where("? IN (?)", bun.Ident(idName), bun.In(keys))
 		err := query.Scan(ctx)
 		return dbModels, err
 	}
