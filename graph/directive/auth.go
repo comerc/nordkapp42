@@ -6,14 +6,16 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 
-	"nordkapp42/graph"
+	"nordkapp42/pkg/jwt"
 )
 
 func Auth(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
-	memberID := graph.ForMemberID(ctx)
-	if memberID != 0 {
-		return next(ctx)
-	} else {
+	payload := jwt.GetPayload(ctx)
+	if jwt.IsExpired(payload) {
+		return nil, errors.New("JWT was expired")
+	}
+	if payload.MemberID == 0 {
 		return nil, errors.New("Unauthorised")
 	}
+	return next(ctx)
 }

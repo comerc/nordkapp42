@@ -38,10 +38,12 @@ func NewGraphQLHandler() *gqlhandler.Server {
 	handler.AddTransport(transport.Websocket{
 		KeepAlivePingInterval: websocketKeepAlivePingInterval,
 		Upgrader: websocket.Upgrader{
+			HandshakeTimeout: time.Minute,
 			CheckOrigin: func(r *http.Request) bool {
 				fmt.Println("********")
 				return true // TODO: under construction
 			},
+			EnableCompression: true,
 		},
 		InitFunc: webSocketInit,
 	})
@@ -83,18 +85,23 @@ func newSchemaConfig() graph.Config {
 }
 
 func webSocketInit(ctx context.Context, initPayload transport.InitPayload) (context.Context, *transport.InitPayload, error) {
+	fmt.Printf("*****webSocketInit*****")
 	raw := jwt.TrimBearer(initPayload.Authorization())
 	if raw == "" {
 		return ctx, &initPayload, errors.New("the auth token is missing in the initialization payload")
 	}
-	memberID, err := jwt.ValidateJWT(raw)
+	payload, err := jwt.ParsePayload(raw)
 	if err != nil {
 		return ctx, &initPayload, err
 	}
-	ctx = context.WithValue(ctx, "memberID", memberID)
+	ctx = context.WithValue(ctx, "JWTPayload", payload)
 	// TODO: https://github.com/99designs/gqlgen/issues/2474#issuecomment-1986030908
 	// Add the token expiration as a deadline and append a close reason to the context values that will be send to the client before the websocket actually closes
 	// (Also throw away the cancel function, which the linter does not like)
-	// newCtx, _ := context.WithDeadline(transport.AppendCloseReason(ctx, "authentication token has expired"), time.Unix(token.ExpiresAt, 0))
+	// ctx, _ = context.WithDeadline(transport.AppendCloseReason(ctx, "authentication token has expired"), time.Unix(ExpiresAt, 0))
+	go func() {
+		<-ctx.Done()
+		fmt.Println("close context")
+	}()
 	return ctx, &initPayload, nil
 }

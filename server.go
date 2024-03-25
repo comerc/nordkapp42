@@ -35,12 +35,12 @@ func WithAuth(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
-		memberID, err := jwt.ValidateJWT(raw)
+		payload, err := jwt.ParsePayload(raw)
 		if err != nil {
 			next.ServeHTTP(w, r)
 			return
 		}
-		ctx := context.WithValue(r.Context(), "memberID", memberID)
+		ctx := context.WithValue(r.Context(), "JWTPayload", payload)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

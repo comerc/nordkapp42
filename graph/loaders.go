@@ -11,7 +11,7 @@ import (
 	"nordkapp42/graph/model"
 )
 
-func ForLoaders(ctx context.Context) *Loaders {
+func GetLoaders(ctx context.Context) *Loaders {
 	return ctx.Value("loaders").(*Loaders)
 }
 
@@ -95,7 +95,7 @@ func fetchModels[T comparable, M model.Model[T]](getDBModels GetDBModelsFn[T, M]
 func getDBModels[T comparable, M model.Model[T]](idName string) GetDBModelsFn[T, M] {
 	return func(ctx context.Context, keys []T) ([]*M, error) {
 		var dbModels []*M
-		db := ForDB(ctx)
+		db := GetDB(ctx)
 		query := db.NewSelect().
 			Model(&dbModels).
 			Where("? IN (?)", bun.Ident(idName), bun.In(keys))
@@ -106,12 +106,12 @@ func getDBModels[T comparable, M model.Model[T]](idName string) GetDBModelsFn[T,
 
 func getChatRoomProps[T comparable, M model.Model[T]](ctx context.Context, keys []T) ([]*M, error) {
 	var dbModels []*M
-	db := ForDB(ctx)
+	db := GetDB(ctx)
 	query := db.NewSelect().
 		Column("room_id", "members.name").
 		Table("room_members").
 		Join("JOIN members ON members.id = member_id").
-		Where("room_id IN (?) AND member_id != ?", bun.In(keys), ForMemberID(ctx))
+		Where("room_id IN (?) AND member_id != ?", bun.In(keys), GetMemberID(ctx))
 	err := query.Scan(ctx, &dbModels)
 	return dbModels, err
 }

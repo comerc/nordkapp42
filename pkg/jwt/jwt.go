@@ -1,14 +1,16 @@
 package jwt
 
 import (
+	"context"
 	"errors"
 	"strconv"
 	"strings"
+	"time"
 
-	"github.com/golang-jwt/jwt"
+	jwt "github.com/golang-jwt/jwt/v5"
 )
 
-const JwtSecret = "30b50d8699c8b71ea291f453877e5dec" // TODO: вынести в env
+const Secret = "30b50d8699c8b71ea291f453877e5dec" // TODO: вынести в env
 
 func TrimBearer(authValue string) string {
 	if len(authValue) > 7 && strings.ToUpper(authValue[0:6]) == "BEARER" {
@@ -17,26 +19,55 @@ func TrimBearer(authValue string) string {
 	return ""
 }
 
-func ValidateJWT(raw string) (int, error) {
+type Payload struct {
+	MemberID int
+	IssuedAt int64
+}
+
+func ParsePayload(raw string) (*Payload, error) {
 	token, err := jwt.Parse(raw, func(token *jwt.Token) (any, error) {
 		// do not try to validate iat
 		// mapClaims := token.Claims.(jwt.MapClaims)
 		// delete(mapClaims, "iat")
-		return []byte(JwtSecret), nil
+		return []byte(Secret), nil
 	})
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 	if !token.Valid {
-		return 0, errors.New("invalid JWT token")
+		return nil, errors.New("invalid JWT token")
 	}
 	mapClaims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		return 0, errors.New("decode JWT token to mapClaims failed")
+		return nil, errors.New("decode JWT token to mapClaims failed")
+	}
+	issuedAt, err := mapClaims.GetIssuedAt()
+	if err != nil {
+		return nil, err
 	}
 	hasuraClaims, ok := mapClaims["https://hasura.io/jwt/claims"].(map[string]any)
 	if !ok {
-		return 0, errors.New("decode JWT token to hasuraClaims failed")
+		return nil, errors.New("decode JWT token to hasuraClaims failed")
 	}
-	return strconv.Atoi(hasuraClaims["x-hasura-user-id"].(string))
+	memberID, err := strconv.Atoi(hasuraClaims["x-hasura-user-id"].(string))
+	if err != nil {
+		return nil, err
+	}
+	res := Payload{
+		MemberID: memberID,
+		IssuedAt: issuedAt.Unix(),
+	}
+	return &res, nil
+}
+
+func IsExpired(payload Payload) bool {
+	return payload.IssuedAt < time.Now().Add(-10*time.Minute).Unix()
+}
+
+func GetPayload(ctx context.Context) Payload {
+	res, dummy := ctx.Value("JWTPayload").(Payload)
+	_ = dummy
+	// без dummy при отсутствии JWTPayload:
+	// "interface conversion: interface {} is nil, not int"
+	return res
 }

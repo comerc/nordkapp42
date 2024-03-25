@@ -4,16 +4,14 @@ import (
 	"context"
 
 	"github.com/uptrace/bun"
+
+	"nordkapp42/pkg/jwt"
 )
 
-func ForDB(ctx context.Context) *bun.DB {
+func GetDB(ctx context.Context) *bun.DB {
 	return ctx.Value("db").(*bun.DB)
 }
 
-func ForMemberID(ctx context.Context) int {
-	res, dummy := ctx.Value("memberID").(int)
-	_ = dummy
-	// без dummy при отсутствии memberID:
-	// "interface conversion: interface {} is nil, not int"
-	return res
+func GetMemberID(ctx context.Context) int {
+	return jwt.GetPayload(ctx).MemberID
 }

@@ -8,27 +8,30 @@ import (
 	"context"
 	"fmt"
 	"nordkapp42/graph/model"
+	"nordkapp42/pkg/jwt"
 	"time"
 
+	"github.com/99designs/gqlgen/graphql/handler/transport"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 	"github.com/vikstrous/dataloadgen"
 )
 
 // Member is the resolver for the member field.
 func (r *messageResolver) Member(ctx context.Context, obj *model.Message) (*model.Member, error) {
-	loader := ForLoaders(ctx).MemberLoader
+	loader := GetLoaders(ctx).MemberLoader
 	return loader.Load(ctx, obj.MemberID)
 }
 
 // Rooms is the resolver for the rooms field.
 func (r *queryResolver) Rooms(ctx context.Context) ([]*model.Room, error) {
-	db := ForDB(ctx)
+	db := GetDB(ctx)
 	var rooms []*model.Room
 	query := db.NewSelect().
 		Column("rooms.*").
 		Table("rooms").
 		Join("JOIN room_members AS t").
 		JoinOn("t.room_id = id").
-		JoinOn("t.member_id = ?", ForMemberID(ctx))
+		JoinOn("t.member_id = ?", GetMemberID(ctx))
 	// if limit != nil {
 	// 	query = query.Limit(*limit)
 	// }
@@ -45,16 +48,16 @@ func (r *queryResolver) Rooms(ctx context.Context) ([]*model.Room, error) {
 func (r *roomResolver) Props(ctx context.Context, obj *model.Room) (*model.RoomProps, error) {
 	var loader *dataloadgen.Loader[int, *model.RoomProps]
 	if obj.Kind == model.RoomKindEnumChat {
-		loader = ForLoaders(ctx).ChatRoomPropsLoader
+		loader = GetLoaders(ctx).ChatRoomPropsLoader
 	} else {
-		loader = ForLoaders(ctx).CommonRoomPropsLoader
+		loader = GetLoaders(ctx).CommonRoomPropsLoader
 	}
 	return loader.Load(ctx, obj.ID)
 }
 
 // Messages is the resolver for the messages field.
 func (r *roomResolver) Messages(ctx context.Context, obj *model.Room) ([]*model.Message, error) {
-	loader := ForLoaders(ctx).ManyMessagesLoader
+	loader := GetLoaders(ctx).ManyMessagesLoader
 	messages, err := loader.Load(ctx, obj.ID)
 	return messages, err
 }
@@ -68,15 +71,17 @@ func (r *subscriptionResolver) Rooms(ctx context.Context) (<-chan []*model.Room,
 func (r *subscriptionResolver) CurrentTime(ctx context.Context) (<-chan *model.Time, error) {
 	// First you'll need to `make()` your channel. Use your type here!
 	ch := make(chan *model.Time)
-
 	// You can (and probably should) handle your channels in a central place outside of `schema.resolvers.go`.
 	// For this example we'll simply use a Goroutine with a simple loop.
 	go func() {
 		// Handle deregistration of the channel here. Note the `defer`
 		defer close(ch)
-
 		flag := true
 		for {
+			if jwt.IsExpired(jwt.GetPayload(ctx)) {
+				transport.AddSubscriptionError(ctx, gqlerror.Errorf("JWT was expired"))
+				return
+			}
 			// In our example we'll send the current time every second.
 			time.Sleep(1 * time.Second)
 			if flag {
@@ -85,22 +90,20 @@ func (r *subscriptionResolver) CurrentTime(ctx context.Context) (<-chan *model.T
 				fmt.Println("Tock")
 			}
 			flag = !flag
-			fmt.Println(ForMemberID(ctx))
-
+			fmt.Println(GetMemberID(ctx))
 			// Prepare your object.
 			currentTime := time.Now()
 			t := &model.Time{
 				UnixTime:  int(currentTime.Unix()),
 				TimeStamp: currentTime.Format(time.RFC3339),
 			}
-
 			// The subscription may have got closed due to the client disconnecting.
 			// Hence we do send in a select block with a check for context cancellation.
 			// This avoids goroutine getting blocked forever or panicking,
 			select {
 			case <-ctx.Done(): // This runs when context gets cancelled. Subscription closes.
 				fmt.Println("Subscription Closed")
-				// transport.AddSubscriptionError(ctx, gqlerror.Errorf("custom expiration error"))
+
 				// Handle deregistration of the channel here. `close(ch)`
 				return // Remember to return to end the routine.
 			case ch <- t: // This is the actual send.
@@ -108,7 +111,6 @@ func (r *subscriptionResolver) CurrentTime(ctx context.Context) (<-chan *model.T
 			}
 		}
 	}()
-
 	// We return the channel and no error.
 	return ch, nil
 }

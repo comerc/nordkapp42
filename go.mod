@@ -14,13 +14,12 @@ replace github.com/uptrace/bun/driver/sqliteshim => ../bun/driver/sqliteshim
 
 require (
 	github.com/99designs/gqlgen v0.17.45
-	github.com/golang-jwt/jwt v3.2.2+incompatible
+	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/gorilla/websocket v1.5.0
 	github.com/lib/pq v1.10.9
 	github.com/uptrace/bun v1.1.17
 	github.com/uptrace/bun/dialect/pgdialect v1.1.17
 	github.com/uptrace/bun/extra/bundebug v1.1.17
-	github.com/vektah/gqlparser v1.3.1
 	github.com/vektah/gqlparser/v2 v2.5.11
 	github.com/vikstrous/dataloadgen v0.0.6
 )
