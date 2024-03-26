@@ -68,6 +68,6 @@ func GetPayload(ctx context.Context) Payload {
 	res, dummy := ctx.Value("JWTPayload").(Payload)
 	_ = dummy
 	// без dummy при отсутствии JWTPayload:
-	// "interface conversion: interface {} is nil, not int"
+	// "interface conversion: interface {} is nil, not Payload"
 	return res
 }
