@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -30,13 +31,15 @@ const ShutdownTimeout = time.Duration(10) * time.Second
 func WithAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("*****WithAuth*****")
-		raw := jwt.TrimBearer(r.Header.Get("Authorization"))
-		if raw == "" {
+		accessToken := jwt.TrimBearer(r.Header.Get("Authorization"))
+		if accessToken == "" {
+			log.Println(errors.New("the auth token is missing in the initialization payload"))
 			next.ServeHTTP(w, r)
 			return
 		}
-		payload, err := jwt.ParsePayload(raw)
+		payload, err := jwt.ParseAccessToken(accessToken)
 		if err != nil {
+			log.Println(err)
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -44,13 +47,6 @@ func WithAuth(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
-
-// func WithMemberID(next http.Handler) http.Handler {
-// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 		ctx := context.WithValue(r.Context(), "memberID", 1) // TODO: JWT Claims
-// 		next.ServeHTTP(w, r.WithContext(ctx))
-// 	})
-// }
 
 func WithDB(db *bun.DB) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {

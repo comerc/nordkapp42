@@ -11,7 +11,31 @@ import (
 	jwt "github.com/golang-jwt/jwt/v5"
 )
 
-const Secret = "30b50d8699c8b71ea291f453877e5dec" // TODO: вынести в env
+// TODO: [gqlgen Set cookie from resolver](https://stackoverflow.com/questions/66090686/gqlgen-set-cookie-from-resolver)
+
+const SECRET = "30b50d8699c8b71ea291f453877e5dec" // TODO: вынести в env
+
+type HasuraClaims struct {
+	AllowedRoles []string `json:"x-hasura-allowed-roles"`
+	DefaultRole  string   `json:"x-hasura-default-role"`
+	UserID       string   `json:"x-hasura-user-id"`
+	OrgID        string   `json:"x-hasura-org-id"`
+}
+
+type Claims struct {
+	jwt.RegisteredClaims
+	HasuraClaims HasuraClaims `json:"https://hasura.io/jwt/claims"`
+}
+
+func NewAccessToken(claims Claims) (string, error) {
+	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return accessToken.SignedString([]byte(SECRET))
+}
+
+func NewRefreshToken(claims jwt.RegisteredClaims) (string, error) {
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return refreshToken.SignedString([]byte(SECRET))
+}
 
 func TrimBearer(authValue string) string {
 	if len(authValue) > 7 && strings.ToUpper(authValue[0:6]) == "BEARER" {
@@ -25,12 +49,9 @@ type Payload struct {
 	IssuedAt int64
 }
 
-func ParsePayload(raw string) (*Payload, error) {
-	token, err := jwt.Parse(raw, func(token *jwt.Token) (any, error) {
-		// do not try to validate iat
-		// mapClaims := token.Claims.(jwt.MapClaims)
-		// delete(mapClaims, "iat")
-		return []byte(Secret), nil
+func ParseAccessToken(accessToken string) (*Payload, error) {
+	token, err := jwt.ParseWithClaims(accessToken, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(SECRET), nil
 	})
 	if err != nil {
 		return nil, err
@@ -38,19 +59,15 @@ func ParsePayload(raw string) (*Payload, error) {
 	if !token.Valid {
 		return nil, errors.New("invalid JWT token")
 	}
-	mapClaims, ok := token.Claims.(jwt.MapClaims)
+	claims, ok := token.Claims.(*Claims)
 	if !ok {
-		return nil, errors.New("decode JWT token to mapClaims failed")
+		return nil, errors.New("decode JWT token to Claims failed")
 	}
-	issuedAt, err := mapClaims.GetIssuedAt()
+	issuedAt, err := claims.GetIssuedAt()
 	if err != nil {
 		return nil, err
 	}
-	hasuraClaims, ok := mapClaims["https://hasura.io/jwt/claims"].(map[string]any)
-	if !ok {
-		return nil, errors.New("decode JWT token to hasuraClaims failed")
-	}
-	memberID, err := strconv.Atoi(hasuraClaims["x-hasura-user-id"].(string))
+	memberID, err := strconv.Atoi(claims.HasuraClaims.UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -61,8 +78,22 @@ func ParsePayload(raw string) (*Payload, error) {
 	return &res, nil
 }
 
+func ParseRefreshToken(refreshToken string) (*jwt.RegisteredClaims, error) {
+	token, err := jwt.ParseWithClaims(refreshToken, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(SECRET), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	if !token.Valid {
+		return nil, errors.New("invalid JWT token")
+	}
+	return token.Claims.(*jwt.RegisteredClaims), err
+}
+
 func (payload Payload) IsExpired() bool {
-	return payload.IssuedAt < time.Now().Add(-10*time.Minute).Unix()
+	start := time.Now().Add(-10 * time.Minute).Unix()
+	return payload.IssuedAt < start
 }
 
 func GetPayload(ctx context.Context) *Payload {
