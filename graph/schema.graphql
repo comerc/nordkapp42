@@ -4,7 +4,7 @@ type Query {
 
 type Subscription {
   rooms: [Room!]! @auth
-  currentTime: Time!
+  currentTime: Time! @auth
 }
 
 # TODO: https://github.com/99designs/gqlgen/issues/774#issuecomment-1022246731

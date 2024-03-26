@@ -78,6 +78,9 @@ func (r *subscriptionResolver) CurrentTime(ctx context.Context) (<-chan *model.T
 		defer close(ch)
 		flag := true
 		for {
+			// TODO: How to add path to errors?
+			// https://github.com/99designs/gqlgen/issues/2474#issuecomment-2017874950
+			// https://github.com/99designs/gqlgen/issues/1118#issuecomment-2019817065
 			if jwt.GetPayload(ctx).IsExpired() {
 				transport.AddSubscriptionError(ctx, gqlerror.Errorf("JWT was expired"))
 				return

@@ -3,6 +3,7 @@ package jwt
 import (
 	"context"
 	"errors"
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -64,10 +65,12 @@ func (payload Payload) IsExpired() bool {
 	return payload.IssuedAt < time.Now().Add(-10*time.Minute).Unix()
 }
 
-func GetPayload(ctx context.Context) Payload {
-	res, dummy := ctx.Value("JWTPayload").(Payload)
-	_ = dummy
-	// без dummy при отсутствии JWTPayload:
-	// "interface conversion: interface {} is nil, not Payload"
+func GetPayload(ctx context.Context) *Payload {
+	res, ok := ctx.Value("JWTPayload").(*Payload)
+	if !ok {
+		log.Println("GetPayload is empty!")
+	}
+	// без ok при отсутствии JWTPayload:
+	// "interface conversion: interface {} is nil, not *Payload"
 	return res
 }
