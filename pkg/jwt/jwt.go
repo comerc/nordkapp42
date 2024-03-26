@@ -11,8 +11,6 @@ import (
 	jwt "github.com/golang-jwt/jwt/v5"
 )
 
-// TODO: [gqlgen Set cookie from resolver](https://stackoverflow.com/questions/66090686/gqlgen-set-cookie-from-resolver)
-
 const SECRET = "30b50d8699c8b71ea291f453877e5dec" // TODO: вынести в env
 
 type HasuraClaims struct {

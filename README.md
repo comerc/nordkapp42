@@ -152,7 +152,10 @@ $ docker-compose up -d --build
 - [x] Поднять Hasura 
   - [x] Определить соглашения в metadata 
   - [x] Сформировать migrations
-- GraphQL Subscribe via Websocket & SSE ([server](https://github.com/99designs/gqlgen/pull/2498) & [client](https://the-guild.dev/graphql/sse))
+- [x] JWT
+- [ ] GraphQL Subscribe via Websocket
+- [ ] GraphQL Subscribe via SSE [server](https://github.com/99designs/gqlgen/pull/2498) & [client](https://the-guild.dev/graphql/sse)
+- [ ] [gqlgen Set cookie from resolver](https://stackoverflow.com/questions/66090686/gqlgen-set-cookie-from-resolver)
 
 ### Stage 2
 
