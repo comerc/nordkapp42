@@ -9,6 +9,10 @@ type Room struct {
 	Messages  []*Message `bun:"-"`
 }
 
+func (r Room) GetID() int {
+	return r.ID
+}
+
 type RoomProps struct {
 	RoomID int
 	Name   string

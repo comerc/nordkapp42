@@ -1,5 +1,7 @@
 package graph
 
+// TODO: нужен канал синхронизации (очистки) кеша лоадеров через нотификацию изменений моделей
+
 import (
 	"context"
 	"fmt"
@@ -19,6 +21,7 @@ func GetLoaders(ctx context.Context) *Loaders {
 type Loaders struct {
 	ManyMessagesLoader    *dataloadgen.Loader[int, []*model.Message]
 	MemberLoader          *dataloadgen.Loader[int, *model.Member]
+	RoomLoader            *dataloadgen.Loader[int, *model.Room]
 	ChatRoomPropsLoader   *dataloadgen.Loader[int, *model.RoomProps]
 	CommonRoomPropsLoader *dataloadgen.Loader[int, *model.RoomProps]
 }
@@ -33,6 +36,10 @@ func NewLoaders() *Loaders {
 		),
 		MemberLoader: dataloadgen.NewLoader(
 			fetchModels(getDBModels[int, model.Member]("id")),
+			dataloadgen.WithWait(time.Millisecond),
+		),
+		RoomLoader: dataloadgen.NewLoader(
+			fetchModels(getDBModels[int, model.Room]("id")),
 			dataloadgen.WithWait(time.Millisecond),
 		),
 		CommonRoomPropsLoader: dataloadgen.NewLoader(

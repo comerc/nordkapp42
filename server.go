@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"log"
@@ -12,6 +11,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/stdlib"
 	_ "github.com/lib/pq"
 
 	"github.com/uptrace/bun"
@@ -66,7 +68,7 @@ func WithDataLoader(next http.Handler) http.Handler {
 
 func NewAppHandler(db *bun.DB) *http.ServeMux {
 	mux := http.NewServeMux()
-	// mux.Handle("/", playground.Handler("GraphQL playground", "/api"))
+	mux.Handle("/", playground.Handler("GraphQL playground", "/api"))
 	var h http.Handler
 	h = handler.NewGraphQLHandler()
 	h = WithAuth(h)
@@ -77,12 +79,23 @@ func NewAppHandler(db *bun.DB) *http.ServeMux {
 }
 
 func main() {
+	dsn := "postgres://postgres:postgrespassword@postgres:5432/postgres?sslmode=disable"
 	// Connect to the database using Bun and the PostgreSQL driver.
-	sqldb, err := sql.Open("postgres", "postgres://postgres:postgrespassword@postgres:5432/postgres?sslmode=disable")
-
+	// case 1
+	// sqldb, err := sql.Open("postgres", dsn)
+	// if err != nil {
+	// 	log.Fatal("open db error", err)
+	// }
+	// case 2
+	// sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
+	// case 3
+	config, err := pgx.ParseConfig(dsn)
 	if err != nil {
-		log.Fatal("open db error", err)
+		panic(err)
 	}
+	// config.PreferSimpleProtocol = true
+	config.DefaultQueryExecMode = pgx.QueryExecModeSimpleProtocol
+	sqldb := stdlib.OpenDB(*config)
 
 	// Create a Bun DB instance using the PostgreSQL dialect.
 	db := bun.NewDB(sqldb, pgdialect.New())
@@ -91,6 +104,35 @@ func main() {
 	db.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true)))
 
 	defer db.Close()
+
+	// *********
+	// go listen(db)
+
+	// fmt.Println(`Type a message and press enter.
+
+	// This message should appear in any other chat instances connected to the same
+	// database.
+
+	// Type "exit" to quit.`)
+
+	// scanner := bufio.NewScanner(os.Stdin)
+	// for scanner.Scan() {
+	// 	msg := scanner.Text()
+	// 	if msg == "exit" {
+	// 		os.Exit(0)
+	// 	}
+
+	// 	_, err = db.ExecContext(context.Background(), "select pg_notify('chat', ?)", msg)
+	// 	if err != nil {
+	// 		fmt.Fprintln(os.Stderr, "Error sending notification:", err)
+	// 		os.Exit(1)
+	// 	}
+	// }
+	// if err := scanner.Err(); err != nil {
+	// 	fmt.Fprintln(os.Stderr, "Error scanning from stdin:", err)
+	// 	os.Exit(1)
+	// }
+	// *********
 
 	// {
 	// 	db := getDB(ctx)
@@ -130,5 +172,50 @@ func main() {
 	// if err := env.Close(); err != nil {
 	// 	log.Fatal("app environment closing failed", zap.Error(err))
 	// }
-
 }
+
+// func listen(db *bun.DB) {
+// 	conn, err := db.Conn(context.Background())
+// 	if err != nil {
+// 		fmt.Fprintln(os.Stderr, "Error connection:", err)
+// 		os.Exit(1)
+// 	}
+// 	defer conn.Close()
+// 	// pgxConn
+// 	var pgxConn *pgx.Conn
+// 	err = conn.Raw(func(driverConn any) error {
+// 		pgxConn = driverConn.(*stdlib.Conn).Conn()
+// 		return nil
+// 	})
+// 	if err != nil {
+// 		fmt.Fprintln(os.Stderr, "pgxConn:", err)
+// 		os.Exit(1)
+// 	}
+
+// 	go func() {
+// 		for {
+// 			time.Sleep(1 * time.Second)
+// 			_, err = db.ExecContext(context.Background(), `select pg_notify('rooms:updated', ?)`, "123")
+// 			if err != nil {
+// 				fmt.Fprintln(os.Stderr, "Error db.ExecContext:", err)
+// 				os.Exit(1)
+// 			}
+// 		}
+// 	}()
+
+// 	_, err = conn.ExecContext(context.Background(), `LISTEN "rooms:updated"`)
+// 	if err != nil {
+// 		fmt.Fprintln(os.Stderr, "Error listening to chat channel:", err)
+// 		os.Exit(1)
+// 	}
+
+// 	for {
+// 		notification, err := pgxConn.WaitForNotification(context.Background())
+// 		if err != nil {
+// 			fmt.Fprintln(os.Stderr, "Error waiting for notification:", err)
+// 			os.Exit(1)
+// 		}
+
+// 		fmt.Println("PID:", notification.PID, "Channel:", notification.Channel, "Payload:", notification.Payload)
+// 	}
+// }

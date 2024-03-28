@@ -9,9 +9,13 @@ import (
 	"fmt"
 	"nordkapp42/graph/model"
 	"nordkapp42/pkg/jwt"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql/handler/transport"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 	"github.com/vikstrous/dataloadgen"
 )
@@ -64,7 +68,97 @@ func (r *roomResolver) Messages(ctx context.Context, obj *model.Room) ([]*model.
 
 // Rooms is the resolver for the rooms field.
 func (r *subscriptionResolver) Rooms(ctx context.Context) (<-chan []*model.Room, error) {
-	panic(fmt.Errorf("not implemented: Rooms - rooms"))
+	ch := make(chan []*model.Room)
+	go func() {
+		defer close(ch)
+		// conn
+		db := GetDB(ctx)
+		conn, err := db.Conn(ctx)
+		if err != nil {
+			transport.AddSubscriptionError(ctx, gqlerror.Errorf("conn: %s", err))
+			return
+		}
+		defer conn.Close()
+		// pgxConn
+		var pgxConn *pgx.Conn
+		err = conn.Raw(func(driverConn any) error {
+			pgxConn = driverConn.(*stdlib.Conn).Conn()
+			return nil
+		})
+		if err != nil {
+			transport.AddSubscriptionError(ctx, gqlerror.Errorf("pgxConn: %s", err))
+			return
+		}
+		// TODO: custom notifications for loader.LoadAll
+		// var notifications []*pgconn.Notification
+		// config := pgxConn.Config()
+		// config.OnNotification = func(_ *pgconn.PgConn, n *pgconn.Notification) {
+		// 	fmt.Println("OnNotification")
+		// 	notifications = append(notifications, n)
+		// }
+		// pgxConn, err = pgx.ConnectConfig(ctx, config)
+		// if err != nil {
+		// 	transport.AddSubscriptionError(ctx, gqlerror.Errorf("ConnectConfig: %s", err))
+		// 	return
+		// }
+		// listen
+		// _, err = pgxConn.Exec(ctx, `LISTEN "rooms:updated"`)
+		_, err = conn.ExecContext(ctx, `LISTEN "rooms:updated"`)
+		if err != nil {
+			transport.AddSubscriptionError(ctx, gqlerror.Errorf("%s", err))
+			return
+		}
+		// notification loop
+		for {
+			fmt.Println("notification")
+			notification, err := pgxConn.WaitForNotification(ctx)
+			if err != nil {
+				transport.AddSubscriptionError(ctx, gqlerror.Errorf("Error waiting for notification: %s", err))
+				return
+			}
+			fmt.Println("PID:", notification.PID, "Channel:", notification.Channel, "Payload:", notification.Payload)
+			splitted := strings.Split(notification.Payload, ", ")
+			var keys = make([]int, len(splitted))
+			for i, s := range splitted {
+				num, _ := strconv.Atoi(s)
+				keys[i] = num
+			}
+			// roomID, err := strconv.Atoi(notification.Payload)
+			// if err != nil {
+			// 	transport.AddSubscriptionError(ctx, gqlerror.Errorf("Invalid roomID: %s", err))
+			// 	return
+			// }
+			if jwt.GetPayload(ctx).IsExpired() {
+				transport.AddSubscriptionError(ctx, gqlerror.Errorf("JWT was expired"))
+				return
+			}
+			loader := GetLoaders(ctx).RoomLoader
+			for _, key := range keys {
+				loader.Clear(key)
+			}
+			res, err := loader.LoadAll(ctx, keys)
+			if err != nil {
+				transport.AddSubscriptionError(ctx, gqlerror.Errorf("RoomLoader: %s", err))
+				return
+			}
+			ch <- res
+			// TODO: custom notifications for loader.LoadAll
+			// err := pgxConn.PgConn().WaitForNotification(ctx)
+			// if err != nil {
+			// 	transport.AddSubscriptionError(ctx, gqlerror.Errorf("Error waiting for notification: %s", err))
+			// 	return
+			// }
+			// for {
+			// 	if len(notifications) == 0 {
+			// 		break
+			// 	}
+			// 	n := notifications[0]
+			// 	notifications = notifications[1:]
+			// 	fmt.Println("PID:", n.PID, "Channel:", n.Channel, "Payload:", n.Payload)
+			// }
+		}
+	}()
+	return ch, nil
 }
 
 // CurrentTime is the resolver for the currentTime field.
