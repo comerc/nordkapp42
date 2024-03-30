@@ -119,6 +119,7 @@
 - [ ] https://github.com/davecgh/go-spew/spew
 - [ ] https://habr.com/ru/articles/672250/
 - [ ] https://github.com/RobinCPel/graphql-postman
+- [ ] https://github.com/oklog/ulid
 
 ## Реализация
 
@@ -481,3 +482,23 @@ HASURA_GRAPHQL_JWT_SECRET: '{ "type": "HS256", "key": "30b50d8699c8b71ea291f4538
 ```
 
 Authorization Bearer <JWT>
+
+***
+
+Какие есть инструменты для организации нагрузочного тестирования GraphQL Subscriptions?
+
+- https://habr.com/ru/companies/lineate/articles/598149/
+- https://dev.to/augustocalaca/how-to-test-graphql-subscriptions-4mld
+- https://github.com/grafana/k6/blob/master/examples/graphql.js
+- https://medium.com/@javierfernandes/testing-graphql-subscriptions-ee14d63bf97a
+- https://github.com/hasura/graphql-bench
+- https://github.com/hasura/graphql-subscriptions-benchmark
+- https://www.yugabyte.com/blog/building-resilient-graphql-apps-and-scaling-them-to-1m-subscriptions/
+- https://developer.ibm.com/articles/awb-load-testing-graphql-performance-with-k6-and-stepzen/
+- https://wundergraph.com/blog/edfs_scaling_graphql_subscriptions_in_go
+- https://hasura.io/blog/graphql-performance-benchmarks-hasura-vs-diy-nodejs-dataloader
+- https://zendesk.engineering/mock-graphql-operations-with-laika-the-only-apollo-client-mocking-tool-youll-need-c116e1f62128
+- https://the-guild.dev/graphql/envelop/docs/guides/monitoring-and-tracing
+- https://k6.io/blog/load-testing-graphql-with-k6/
+- https://wundergraph.com/blog/quirks_of_graphql_subscriptions_sse_websockets_hasura_apollo_federation_supergraph
+- https://medium.com/swlh/performance-testing-a-graphql-server-with-apache-jmeter-tutorial-for-beginners-da5f7cf8b810
