@@ -21,7 +21,7 @@ func GetLoaders(ctx context.Context) *Loaders {
 type Loaders struct {
 	ManyMessagesLoader    *dataloadgen.Loader[int, []*model.Message]
 	MemberLoader          *dataloadgen.Loader[int, *model.Member]
-	RoomLoader            *dataloadgen.Loader[int, *model.Room]
+	MemberRoomLoader      *dataloadgen.Loader[int, *model.Room]
 	ChatRoomPropsLoader   *dataloadgen.Loader[int, *model.RoomProps]
 	CommonRoomPropsLoader *dataloadgen.Loader[int, *model.RoomProps]
 }
@@ -38,8 +38,8 @@ func NewLoaders() *Loaders {
 			fetchModels(getDBModels[int, model.Member]("id")),
 			dataloadgen.WithWait(time.Millisecond),
 		),
-		RoomLoader: dataloadgen.NewLoader(
-			fetchModels(getDBModels[int, model.Room]("id")),
+		MemberRoomLoader: dataloadgen.NewLoader(
+			fetchModels(getMemberRooms[int, model.Room]),
 			dataloadgen.WithWait(time.Millisecond),
 		),
 		CommonRoomPropsLoader: dataloadgen.NewLoader(
@@ -56,7 +56,7 @@ func NewLoaders() *Loaders {
 func fetchManyMessages(ctx context.Context, keys []int) ([][]*model.Message, []error) {
 	dbModels, err := getDBModels[int, model.Message]("room_id")(ctx, keys)
 	if err != nil {
-		return [][]*model.Message{}, []error{err}
+		return nil, []error{err}
 	}
 	m := make(map[int][]*model.Message)
 	for _, dbModel := range dbModels {
@@ -78,7 +78,7 @@ func fetchModels[T comparable, M model.Model[T]](getDBModels GetDBModelsFn[T, M]
 	return func(ctx context.Context, keys []T) ([]*M, []error) {
 		dbModels, err := getDBModels(ctx, keys)
 		if err != nil {
-			return dbModels, []error{err}
+			return nil, []error{err}
 		}
 		// Mapping model IDs to models for quick lookup.
 		m := make(map[T]*M)
@@ -119,6 +119,34 @@ func getChatRoomProps[T comparable, M model.Model[T]](ctx context.Context, keys 
 		Table("room_members").
 		Join("JOIN members ON members.id = member_id").
 		Where("room_id IN (?) AND member_id != ?", bun.In(keys), GetMemberID(ctx))
+	err := query.Scan(ctx, &dbModels)
+	return dbModels, err
+}
+
+// TODO: это будет не лоадер, а просто резолвер GetRoomByPK
+// func getRooms[T comparable, M model.Model[T]](ctx context.Context, keys []T) ([]*M, error) {
+// 	var dbModels []*M
+// 	db := GetDB(ctx)
+// 	query := db.NewSelect().
+// 		Column("rooms.*").
+// 		Table("rooms").
+// 		Distinct().
+// 		Join("JOIN room_members AS t").
+// 		JoinOn("t.room_id = id").
+// 		JoinOn("room_id IN (?) AND (kind != 'CHAT' OR t.member_id = ?)", bun.In(keys), GetMemberID(ctx))
+// 	err := query.Scan(ctx, &dbModels)
+// 	return dbModels, err
+// }
+
+func getMemberRooms[T comparable, M model.Model[T]](ctx context.Context, keys []T) ([]*M, error) {
+	var dbModels []*M
+	db := GetDB(ctx)
+	query := db.NewSelect().
+		Column("rooms.*").
+		Table("rooms").
+		Join("JOIN room_members AS t").
+		JoinOn("t.room_id = id").
+		JoinOn("room_id IN (?) AND t.member_id = ?", bun.In(keys), GetMemberID(ctx))
 	err := query.Scan(ctx, &dbModels)
 	return dbModels, err
 }

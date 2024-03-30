@@ -23,6 +23,9 @@ import (
 // Member is the resolver for the member field.
 func (r *messageResolver) Member(ctx context.Context, obj *model.Message) (*model.Member, error) {
 	loader := GetLoaders(ctx).MemberLoader
+	if GetIsSubscription(ctx) {
+		loader.Clear(obj.MemberID)
+	}
 	return loader.Load(ctx, obj.MemberID)
 }
 
@@ -56,14 +59,19 @@ func (r *roomResolver) Props(ctx context.Context, obj *model.Room) (*model.RoomP
 	} else {
 		loader = GetLoaders(ctx).CommonRoomPropsLoader
 	}
+	if GetIsSubscription(ctx) {
+		loader.Clear(obj.ID)
+	}
 	return loader.Load(ctx, obj.ID)
 }
 
 // Messages is the resolver for the messages field.
 func (r *roomResolver) Messages(ctx context.Context, obj *model.Room) ([]*model.Message, error) {
 	loader := GetLoaders(ctx).ManyMessagesLoader
-	messages, err := loader.Load(ctx, obj.ID)
-	return messages, err
+	if GetIsSubscription(ctx) {
+		loader.Clear(obj.ID)
+	}
+	return loader.Load(ctx, obj.ID)
 }
 
 // Rooms is the resolver for the rooms field.
@@ -81,11 +89,10 @@ func (r *subscriptionResolver) Rooms(ctx context.Context) (<-chan []*model.Room,
 		defer conn.Close()
 		// pgxConn
 		var pgxConn *pgx.Conn
-		err = conn.Raw(func(driverConn any) error {
+		if err := conn.Raw(func(driverConn any) error {
 			pgxConn = driverConn.(*stdlib.Conn).Conn()
 			return nil
-		})
-		if err != nil {
+		}); err != nil {
 			transport.AddSubscriptionError(ctx, gqlerror.Errorf("pgxConn: %s", err))
 			return
 		}
@@ -103,8 +110,12 @@ func (r *subscriptionResolver) Rooms(ctx context.Context) (<-chan []*model.Room,
 		// }
 		// listen
 		// _, err = pgxConn.Exec(ctx, `LISTEN "rooms:updated"`)
-		_, err = conn.ExecContext(ctx, `LISTEN "rooms:updated"`)
-		if err != nil {
+		// _, err = conn.ExecContext(ctx, "CREATE TEMP TABLE IF NOT EXISTS session_vars (member_id INT); INSERT INTO session_vars (member_id) VALUES (?)", GetMemberID(ctx))
+		// if err != nil {
+		// 	transport.AddSubscriptionError(ctx, gqlerror.Errorf("%s", err))
+		// 	return
+		// }
+		if _, err := conn.ExecContext(ctx, `LISTEN "rooms:updated"`); err != nil {
 			transport.AddSubscriptionError(ctx, gqlerror.Errorf("%s", err))
 			return
 		}
@@ -132,16 +143,24 @@ func (r *subscriptionResolver) Rooms(ctx context.Context) (<-chan []*model.Room,
 				transport.AddSubscriptionError(ctx, gqlerror.Errorf("JWT was expired"))
 				return
 			}
-			loader := GetLoaders(ctx).RoomLoader
+			loader := GetLoaders(ctx).MemberRoomLoader
 			for _, key := range keys {
 				loader.Clear(key)
 			}
-			res, err := loader.LoadAll(ctx, keys)
-			if err != nil {
-				transport.AddSubscriptionError(ctx, gqlerror.Errorf("RoomLoader: %s", err))
+			rooms, err := loader.LoadAll(ctx, keys)
+			if len(rooms) == 0 && err != nil {
+				transport.AddSubscriptionError(ctx, gqlerror.Errorf("MemberRoomLoader: %s", err))
 				return
 			}
-			ch <- res
+			var res []*model.Room
+			for _, room := range rooms {
+				if room != nil {
+					res = append(res, room)
+				}
+			}
+			if len(res) > 0 {
+				ch <- res
+			}
 			// TODO: custom notifications for loader.LoadAll
 			// err := pgxConn.PgConn().WaitForNotification(ctx)
 			// if err != nil {

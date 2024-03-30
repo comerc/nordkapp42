@@ -1,5 +1,7 @@
 type Query {
-  rooms: [Room!]! @auth
+  # searchRooms # отдаёт любые публичные комнаты и личные чаты по строке поиска
+  # getRoomByPK # отдаёт любую публичную комнату или личный чат по ID
+  rooms: [Room!]! @auth # отдаёт только свои комнаты и личные чаты
 }
 
 type Subscription {

@@ -40,7 +40,6 @@ func NewGraphQLHandler() *gqlhandler.Server {
 		Upgrader: websocket.Upgrader{
 			HandshakeTimeout: time.Minute,
 			CheckOrigin: func(r *http.Request) bool {
-				fmt.Println("********")
 				return true // TODO: Under Construction
 			},
 			EnableCompression: true,
@@ -85,7 +84,7 @@ func newSchemaConfig() graph.Config {
 }
 
 func webSocketInit(ctx context.Context, initPayload transport.InitPayload) (context.Context, *transport.InitPayload, error) {
-	fmt.Println("*****webSocketInit*****")
+	ctx = context.WithValue(ctx, "isSubscription", true)
 	accessToken := jwt.TrimBearer(initPayload.Authorization())
 	if accessToken == "" {
 		return ctx, &initPayload, errors.New("the auth token is missing in the initialization payload")
@@ -95,6 +94,7 @@ func webSocketInit(ctx context.Context, initPayload transport.InitPayload) (cont
 		return ctx, &initPayload, err
 	}
 	ctx = context.WithValue(ctx, "JWTPayload", payload)
+	// TODO: вынести dbConn - можно ли использовать общий для нескольких корневых резолверов?
 	go func() {
 		<-ctx.Done()
 		fmt.Println("close context") // TODO: for debug only

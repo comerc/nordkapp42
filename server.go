@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -32,7 +31,6 @@ const ShutdownTimeout = time.Duration(10) * time.Second
 
 func WithAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("*****WithAuth*****")
 		accessToken := jwt.TrimBearer(r.Header.Get("Authorization"))
 		if accessToken == "" {
 			log.Println(errors.New("the auth token is missing in the initialization payload"))
