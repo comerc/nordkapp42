@@ -1,6 +1,6 @@
 type Query {
-  # searchRooms # отдаёт любые публичные комнаты и личные чаты по строке поиска
-  # getRoomByPK # отдаёт любую публичную комнату или личный чат по ID
+  # searchRooms # TODO: отдаёт любые публичные комнаты и личные чаты по строке поиска
+  # getRoomByPK # TODO: отдаёт любую публичную комнату или личный чат по ID
   rooms: [Room!]! @auth # отдаёт только свои комнаты и личные чаты
 }
 
@@ -10,7 +10,6 @@ type Subscription {
 # TODO: https://github.com/99designs/gqlgen/issues/774#issuecomment-1022246731
 # refreshToken($token)
 }
-
 
 type Member {
   createdAt: timestamptz!
