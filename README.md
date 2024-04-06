@@ -55,6 +55,7 @@
 - [ ] Livekit.io
 - [ ] MINIO https://github.com/minio/minio-go
 - [ ] Stitching or Federation - https://habr.com/ru/articles/728476/
+- [ ] Автоматическая генерация миграций - https://github.com/ariga/atlas
 
 ## Для DevOPS
 
@@ -120,6 +121,8 @@
 - [ ] https://habr.com/ru/articles/672250/
 - [ ] https://github.com/RobinCPel/graphql-postman
 - [ ] https://github.com/oklog/ulid
+- [ ] [wundergraph/cosmo](https://github.com/wundergraph/cosmo) The open-source solution to building, maintaining, and collaborating on GraphQL Federation at Scale. An alternative to Apollo Studio and GraphOS.
+- [ ] [YugabyteDB is a high-performance, cloud-native, distributed SQL database that aims to support all PostgreSQL features](https://github.com/yugabyte/yugabyte-db)
 
 ## Реализация
 
@@ -145,18 +148,20 @@ $ docker-compose up -d --build
 
 - [x] Составить план - уже хороший план
 - [x] LiveSharing
-- Boilerplate (модульный монолит)
+- [ ] Boilerplate (модульный монолит)
 - Все сообщения хранятся вечно, и могут быть получены в отложенном режиме (Select Stream)
-- Простейшая реализация PUB/SUB 1-1 & 1-N
+- [x] Простейшая реализация PUB/SUB 1-1 & 1-N
   - Members: и отправляют и читают
   - Rooms: 1-1 и 1-N (приватные и публичные)
 - [x] Поднять Hasura 
   - [x] Определить соглашения в metadata 
   - [x] Сформировать migrations
 - [x] JWT
-- [ ] GraphQL Subscribe via Websocket
+- [x] GraphQL Subscribe via Websocket
 - [ ] GraphQL Subscribe via SSE [server](https://github.com/99designs/gqlgen/pull/2498) & [client](https://the-guild.dev/graphql/sse)
 - [ ] [gqlgen Set cookie from resolver](https://stackoverflow.com/questions/66090686/gqlgen-set-cookie-from-resolver)
+- [ ] Проверить мультиплексирование подписок
+- [ ] Список онлайн-пользователей
 
 ### Stage 2
 
@@ -502,3 +507,20 @@ Authorization Bearer <JWT>
 - https://k6.io/blog/load-testing-graphql-with-k6/
 - https://wundergraph.com/blog/quirks_of_graphql_subscriptions_sse_websockets_hasura_apollo_federation_supergraph
 - https://medium.com/swlh/performance-testing-a-graphql-server-with-apache-jmeter-tutorial-for-beginners-da5f7cf8b810
+- https://github.com/YugabyteDB-Samples/yugabyte-graphql-apps/tree/master/graphql-subscription-with-yugabytedb/graphql-subscription-perf-tool
+- https://github.com/eranyanay/1m-go-websockets
+
+
+## Why EntGo?
+
+...
+
+Как вы видите, вы должны принимать решения очень рано при проектировании вашей схемы GraphQL, а также схемы базы данных, чтобы иметь возможность надлежащим образом защищать узлы. Каждый раз, когда вы входите в узел, вы должны быть в состоянии ответить на вопрос, разрешено ли текущему зарегистрированному пользователю видеть поле или нет.
+
+Таким образом, возникает вопрос, должна ли эта логика действительно находиться в резолвере. Если вы спросите создателей GraphQL, их ответ будет "нет". Поскольку они уже решили проблему на слое ниже резолверов, слое доступа к данным или их "Entity (Ent) Framework", они не затрагивали проблему с GraphQL. Это также причина, почему авторизация полностью отсутствует в GraphQL.
+
+Сказав это, решение проблемы на слое ниже не является единственным допустимым решением. Если это сделано правильно, вполне нормально решать проблему из резолверов.
+
+Прежде чем мы продолжим, вы должны взглянуть на отличный фреймворк entgo и его архитектуру. Даже если вы не собираетесь использовать Golang для построения слоя вашего API, вы можете увидеть, сколько мысли и опыта вложено в дизайн фреймворка. Вместо того чтобы разбрасывать логику авторизации по вашим резолверам, вы можете определить политики на уровне данных, и нет никакого способа обойти их. Политика доступа является частью модели данных. Вам не обязательно использовать фреймворк, как entgo, но имейте в виду, что тогда вам придется решить эту сложную проблему самостоятельно.
+
+***
