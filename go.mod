@@ -18,6 +18,7 @@ require (
 	github.com/gorilla/websocket v1.5.0
 	github.com/jackc/pgx/v5 v5.5.5
 	github.com/lib/pq v1.10.9
+	github.com/rs/cors v1.10.1
 	github.com/uptrace/bun v1.1.17
 	github.com/uptrace/bun/dialect/pgdialect v1.1.17
 	github.com/uptrace/bun/extra/bundebug v1.1.17

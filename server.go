@@ -15,6 +15,7 @@ import (
 	"github.com/jackc/pgx/v5/stdlib"
 	_ "github.com/lib/pq"
 
+	"github.com/rs/cors"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/extra/bundebug"
@@ -28,6 +29,14 @@ const Addr = ":8888"
 const ShutdownTimeout = time.Duration(10) * time.Second
 
 // TODO: Лучшей практикой при обработке контекстных ключей будет создание неэкспортируемого пользовательского типа: `type key string; const myCustomKey key = "key"; ctx := context.WithValue(context.Background(), myCustomKey, "val")`
+
+func WithCORS(next http.Handler) http.Handler {
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost" + Addr},
+		AllowCredentials: true,
+	})
+	return c.Handler(next)
+}
 
 func WithAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -72,6 +81,7 @@ func NewAppHandler(db *bun.DB) *http.ServeMux {
 	h = WithAuth(h)
 	h = WithDataLoader(h)
 	h = WithDB(db)(h)
+	h = WithCORS(h)
 	mux.Handle("/api", h)
 	return mux
 }
