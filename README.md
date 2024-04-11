@@ -93,7 +93,7 @@
 - [ ] er := errgroup.Group{}; eg.SetLimit(limit) - ещё один примитив синхронизации (golang.org/x/sync/errgroup)
 - [ ] [Compile-time Dependency Injection for Go](https://github.com/google/wire)
 - [ ] [Fx is a dependency injection system for Go](https://github.com/uber-go/fx)
-- [ ] github.com/uber-go/zap
+- [ ] github.com/uber-go/zap or https://github.com/rs/zerolog
 - [ ] github.com/golangci/golangci-lint
 - [ ] github.com/uber-go/config
 - [ ] [Методы организации DI и жизненного цикла приложения в GO](https://habr.com/ru/companies/vivid_money/articles/531822/)
@@ -123,6 +123,9 @@
 - [ ] https://github.com/oklog/ulid
 - [ ] [wundergraph/cosmo](https://github.com/wundergraph/cosmo) The open-source solution to building, maintaining, and collaborating on GraphQL Federation at Scale. An alternative to Apollo Studio and GraphOS.
 - [ ] [YugabyteDB is a high-performance, cloud-native, distributed SQL database that aims to support all PostgreSQL features](https://github.com/yugabyte/yugabyte-db)
+- [ ] [Наш опыт проброса контекстов для cgo-вызовов на примере Reindexer](https://www.youtube.com/watch?v=r78oFeSp0pw)
+- [ ] [10 GraphQL Developer Tools I Use To Make Building APIs Easier](https://wundergraph.com/blog/10_graphql_tools_to_increase_developer_productivity)
+- [ ] https://connectrpc.com/
 
 ## Реализация
 
@@ -524,3 +527,35 @@ Authorization Bearer <JWT>
 Прежде чем мы продолжим, вы должны взглянуть на отличный фреймворк entgo и его архитектуру. Даже если вы не собираетесь использовать Golang для построения слоя вашего API, вы можете увидеть, сколько мысли и опыта вложено в дизайн фреймворка. Вместо того чтобы разбрасывать логику авторизации по вашим резолверам, вы можете определить политики на уровне данных, и нет никакого способа обойти их. Политика доступа является частью модели данных. Вам не обязательно использовать фреймворк, как entgo, но имейте в виду, что тогда вам придется решить эту сложную проблему самостоятельно.
 
 ***
+
+Клавиатурная болезнь:
+
+- База 61
+- Кепки 28
+- Свичи 56
+- Артизан 16
+- Смазка 6
+- Кофр 9
+- Нумпад 1 46
+- Нумпад 2 47
+- Прокладки 5
+- Пинцет 1
+- Съёмник 2
+- Магнитные разъемы 2
+Итого: 279
+
+***
+
+> Interested to understand how does this compares and relates to https://github.com/99designs/gqlgen. Especially in the area of type system, is this reflection based, materialized types?
+	
+jensneuse on March 2, 2022:
+
+gqlgen allows you to write GraphQL Servers with resolvers, etc. graphql-go-tools implements not just the GraphQL specification but also comes with a GraphQL engine that is "thunk-based". What this means is that you don't "implement" resolvers, you configure them. We then have a Query Planner, similar to a SQL database, that can make a stateless execution plan for a given GraphQL query. This plan can be cached and then executed, making it very efficient.
+
+What's possible so far is that you can combine multiple GraphQL and REST APIs into a single unified GraphQL API. It also supports Apollo Federation as upstream, including subscriptions.
+
+The whole system is very flexible and extensible so that you can implement a few interfaces and add support for e.g. gRPC or Kafka as upstream.
+
+We're using the engine in WunderGraph to make it easy to configure and use: https://wundergraph.com/ What WunderGraph does is it gives you a TypeScript SDK to automatically configure the "unified graph" based on introspecting one or more DataSources, e.g. OpenAPI (REST), GraphQL, Federation and Databases like PostgreSQL, MySQL, Planetscale etc..
+
+What problem does it solve? Using this engine, you can talk to multiple heterogenous systems as if they are one single GraphQL API, even though their sub protocols are different.
