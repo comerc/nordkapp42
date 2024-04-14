@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
@@ -11,7 +12,19 @@ func main() {
 
 	handler.HandleFunc("/", Hello)
 
-	http.ListenAndServe(":8080", handler)
+	// cert, err := tls.LoadX509KeyPair("localhost.pem", "localhost-key.pem")
+	// if err != nil {
+	// 	log.Fatalf("server: loadkeys: %s", err)
+	// }
+	// config := tls.Config{Certificates: []tls.Certificate{cert}}
+
+	server := &http.Server{
+		Addr:    ":8888",
+		Handler: handler,
+	}
+
+	log.Printf("Listening to port 8888")
+	log.Fatal(server.ListenAndServeTLS("localhost.pem", "localhost-key.pem"))
 }
 
 func Hello(w http.ResponseWriter, r *http.Request) {

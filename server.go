@@ -32,7 +32,7 @@ const ShutdownTimeout = time.Duration(10) * time.Second
 
 func WithCORS(next http.Handler) http.Handler {
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost" + Addr},
+		AllowedOrigins:   []string{"http://localhost:3000"},
 		AllowCredentials: true,
 	})
 	return c.Handler(next)
@@ -75,13 +75,13 @@ func WithDataLoader(next http.Handler) http.Handler {
 
 func NewAppHandler(db *bun.DB) *http.ServeMux {
 	mux := http.NewServeMux()
-	mux.Handle("/", playground.Handler("GraphQL playground", "/api"))
+	mux.Handle("/", playground.AltairHandler("GraphQL playground", "/api"))
 	var h http.Handler
 	h = handler.NewGraphQLHandler()
-	h = WithAuth(h)
+	// h = WithAuth(h)
 	h = WithDataLoader(h)
 	h = WithDB(db)(h)
-	h = WithCORS(h)
+	// h = WithCORS(h)
 	mux.Handle("/api", h)
 	return mux
 }
@@ -157,7 +157,11 @@ func main() {
 
 	go func() {
 		log.Printf("app start on %s", Addr)
-		if err := server.ListenAndServe(); err != http.ErrServerClosed {
+		// if err := server.ListenAndServe(
+		if err := server.ListenAndServeTLS(
+			"localhost.pem",
+			"localhost-key.pem",
+		); err != http.ErrServerClosed {
 			log.Fatal("app stopped due error", err)
 		}
 		log.Println("app stopped gracefully")

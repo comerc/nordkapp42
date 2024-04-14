@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"net/http"
 	"time"
 
 	"nordkapp42/graph"
@@ -17,7 +16,6 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
-	"github.com/gorilla/websocket"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
@@ -35,18 +33,20 @@ func NewGraphQLHandler() *gqlhandler.Server {
 	)
 
 	// Transports
-	handler.AddTransport(transport.Websocket{
-		KeepAlivePingInterval: websocketKeepAlivePingInterval,
-		Upgrader: websocket.Upgrader{
-			HandshakeTimeout: time.Minute,
-			CheckOrigin: func(r *http.Request) bool {
-				return true // TODO: Under Construction
-			},
-			EnableCompression: true,
-		},
-		InitFunc: webSocketInit,
-	})
+	// handler.AddTransport(transport.Websocket{
+	// 	KeepAlivePingInterval: websocketKeepAlivePingInterval,
+	// 	Upgrader: websocket.Upgrader{
+	// 		HandshakeTimeout: time.Minute,
+	// 		CheckOrigin: func(r *http.Request) bool {
+	// 			return true // TODO: Under Construction
+	// 		},
+	// 		EnableCompression: true,
+	// 	},
+	// 	InitFunc: webSocketInit,
+	// })
+	handler.AddTransport(transport.SSE{})
 	handler.AddTransport(transport.Options{})
+	// handler.AddTransport(transport.GET{})
 	handler.AddTransport(transport.POST{})
 	handler.AddTransport(transport.MultipartForm{
 		MaxUploadSize: maxUploadSize,
@@ -77,6 +77,7 @@ func NewGraphQLHandler() *gqlhandler.Server {
 func newSchemaConfig() graph.Config {
 	cfg := graph.Config{Resolvers: &graph.Resolver{}}
 	cfg.Directives.Auth = directive.Auth
+	// cfg.Directives.User = directive.User
 	cfg.Complexity.Query.Rooms = graph.QueryRoomsComplexity
 	cfg.Complexity.Subscription.Rooms = graph.SubscriptionRoomsComplexity
 	cfg.Complexity.Room.Messages = graph.RoomMessagesComplexity

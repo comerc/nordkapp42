@@ -194,10 +194,11 @@ func (r *subscriptionResolver) CurrentTime(ctx context.Context) (<-chan *model.T
 			// TODO: How to add path to errors?
 			// https://github.com/99designs/gqlgen/issues/2474#issuecomment-2017874950
 			// https://github.com/99designs/gqlgen/issues/1118#issuecomment-2019817065
-			if jwt.GetPayload(ctx).IsExpired() {
-				transport.AddSubscriptionError(ctx, gqlerror.Errorf("JWT was expired"))
-				return
-			}
+			// if jwt.GetPayload(ctx).IsExpired() {
+			// 	transport.AddSubscriptionError(ctx, gqlerror.Errorf("JWT was expired"))
+			// 	return
+			// }
+			//fmt.Println(GetMemberID(ctx))
 			// In our example we'll send the current time every second.
 			time.Sleep(1 * time.Second)
 			if flag {
@@ -206,7 +207,6 @@ func (r *subscriptionResolver) CurrentTime(ctx context.Context) (<-chan *model.T
 				fmt.Println("Tock")
 			}
 			flag = !flag
-			fmt.Println(GetMemberID(ctx))
 			// Prepare your object.
 			currentTime := time.Now()
 			t := &model.Time{

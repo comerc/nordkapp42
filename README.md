@@ -126,6 +126,8 @@
 - [ ] [Наш опыт проброса контекстов для cgo-вызовов на примере Reindexer](https://www.youtube.com/watch?v=r78oFeSp0pw)
 - [ ] [10 GraphQL Developer Tools I Use To Make Building APIs Easier](https://wundergraph.com/blog/10_graphql_tools_to_increase_developer_productivity)
 - [ ] https://connectrpc.com/
+- [ ] Partial update (JSON Patch) - [Building realtime apps with Server-Sent Events and GraphQL](https://grafbase.com/blog/building-realtime-apps-with-server-sent-events-and-graphql)
+- [ ] [A dream of scalable and enriched GraphQL subscriptions](https://medium.com/pipedrive-engineering/a-dream-of-scalable-and-enriched-graphql-subscriptions-724284448e65) 
 
 ## Реализация
 
@@ -559,3 +561,60 @@ The whole system is very flexible and extensible so that you can implement a few
 We're using the engine in WunderGraph to make it easy to configure and use: https://wundergraph.com/ What WunderGraph does is it gives you a TypeScript SDK to automatically configure the "unified graph" based on introspecting one or more DataSources, e.g. OpenAPI (REST), GraphQL, Federation and Databases like PostgreSQL, MySQL, Planetscale etc..
 
 What problem does it solve? Using this engine, you can talk to multiple heterogenous systems as if they are one single GraphQL API, even though their sub protocols are different.
+
+***
+
+как организовать подписки GraphQL через директивы @defer & @stream & @live
+
+https://the-guild.dev/graphql/yoga-server/docs/features/defer-stream
+https://www.apollographql.com/blog/new-features-in-graphql-batch-defer-stream-live-and-subscribe
+
+***
+
+## Experimental GraphQL Playground
+
+https://codesandbox.io/p/sandbox/graphql-live-query-nuq4v
+
+Features:
+- Query (HTTP, HTTP-Multipart, WebSocket)
+- Mutation (HTTP, HTTP-Multipart, WebSocket)
+- Query with @defer (HTTP-Multipart, WebSocket)
+- Query with @stream (HTTP-Multipart, WebSocket)
+- Subscription (WebSocket/SSE)
+- Query with @live (WebSocket/SSE)
+
+Check out the Fetcher implementations on GraphiQL
+
+Built on the following transports:
+
+- graphql-helix - GraphQL over HTTP
+- graphql-ws - GraphQL over WebSocket
+- @n1ru4l/socket-io-graphql-server - GraphQL over Socket.io
+
+and powered by the following libraries:
+
+- graphql-js - The JavaScript reference implementation for GraphQL
+- meros - Makes reading multipart responses simple
+- SSE-Z - Simple SSE wrapper
+- graphql-live-query - GraphQL live queries for any GraphQL schema
+
+***
+
+## GraphQL Subscribe via SSE
+
+```bash
+brew install mkcert
+mkcert -install
+mv localhost-key.pem localhost.pem dest-dir
+mkcert localhost
+```
+
+```bash
+curl -N --request POST --url https://localhost:8888/api \
+--data '{"query":"subscription { currentTime { unixTime timeStamp } }"}' \
+-H "accept: text/event-stream" -H 'content-type: application/json' \
+--verbose
+```
+
+***
+
