@@ -198,7 +198,7 @@ $ docker-compose up -d --build
 ### Stage 7
 
 - Temporal + https://github.com/vikstrous/tempts
-- Поднять Kafka (для реализации "машины времени")
+- Поднять Kafka (для реализации "машины времени") или Redis Streams - тоже позволяют перематывать события назад
 
 ### Stage 8
 
@@ -531,7 +531,6 @@ Authorization Bearer <JWT>
 ***
 
 Клавиатурная болезнь:
-
 - База 61
 - Кепки 28
 - Свичи 56
@@ -618,3 +617,21 @@ curl -N --request POST --url https://localhost:8888/api \
 
 ***
 
+---
+
+Backlog на тему "million subscribtions"
+
+- https://github.com/wundergraph/federation-benchmarks
+- https://www.youtube.com/watch?v=eP_02zkwM5Y&t=2290s
+- https://github.com/eranyanay/1m-go-websockets?tab=readme-ov-file
+- https://www.yugabyte.com/blog/building-resilient-graphql-apps-and-scaling-them-to-1m-subscriptions/
+- https://github.com/YugabyteDB-Samples/yugabyte-graphql-apps/blob/master/graphql-subscription-with-yugabytedb/1M_subscriptions.md
+- https://github.com/hasura/graphql-subscriptions-benchmark
+- https://github.com/hasura/graphql-engine/blob/master/architecture/live-queries.md
+- https://wundergraph.com/blog/apollo_graphql_federation_with_subscriptions_production_grade_and_highly_scalable
+- https://wundergraph.com/blog/optimizing_large_graphql_operations_with_golangs_pprof_tools
+- https://hasura.io/learn/graphql/intro-graphql/graphql-subscriptions/
+- https://hasura.io/docs/latest/subscriptions/postgres/livequery/use-cases/
+- https://hasura.io/docs/latest/subscriptions/postgres/index/
+- https://grafbase.com/blog/building-realtime-apps-with-server-sent-events-and-graphql
+- https://the-guild.dev/blog/subscriptions-and-live-queries-real-time-with-graphql
