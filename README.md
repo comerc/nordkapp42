@@ -70,7 +70,7 @@
 - [ ] testcontainers-go
 - [ ] bufbuild/buf
 - [ ] golang-migrate/migrate
-- [ ] sqlize 
+- [ ] sqlize
   - Generate sql migration from diff between existed sql and objects
   - Generate migration version - compatible with golang-migrate/migrate
 - [ ] pressly/goose
@@ -127,7 +127,9 @@
 - [ ] [10 GraphQL Developer Tools I Use To Make Building APIs Easier](https://wundergraph.com/blog/10_graphql_tools_to_increase_developer_productivity)
 - [ ] https://connectrpc.com/
 - [ ] Partial update (JSON Patch) - [Building realtime apps with Server-Sent Events and GraphQL](https://grafbase.com/blog/building-realtime-apps-with-server-sent-events-and-graphql)
-- [ ] [A dream of scalable and enriched GraphQL subscriptions](https://medium.com/pipedrive-engineering/a-dream-of-scalable-and-enriched-graphql-subscriptions-724284448e65) 
+- [ ] [A dream of scalable and enriched GraphQL subscriptions](https://medium.com/pipedrive-engineering/a-dream-of-scalable-and-enriched-graphql-subscriptions-724284448e65)
+- [ ] gomock by uber
+- [ ] https://github.com/sourcegraph/conc/
 
 ## Реализация
 
@@ -158,8 +160,8 @@ $ docker-compose up -d --build
 - [x] Простейшая реализация PUB/SUB 1-1 & 1-N
   - Members: и отправляют и читают
   - Rooms: 1-1 и 1-N (приватные и публичные)
-- [x] Поднять Hasura 
-  - [x] Определить соглашения в metadata 
+- [x] Поднять Hasura
+  - [x] Определить соглашения в metadata
   - [x] Сформировать migrations
 - [x] JWT
 - [x] GraphQL Subscribe via Websocket
@@ -339,7 +341,7 @@ Source: Conversation with Bing, 2/11/2024
 
 - github.com/gogo/protobuf - ускоряет сериализацию protobuf в пять раз, т.к. вметсо reflect использует кодогенерацию (ffjson & easyjson - такая же история).
 
-***
+---
 
 Go-Fiber
 
@@ -347,7 +349,7 @@ https://github.com/99designs/gqlgen/discussions/1802
 https://github.com/99designs/gqlgen/issues/1281
 https://github.com/99designs/gqlgen/issues/1664#issuecomment-1616620967
 
-***
+---
 
 Нагрузочное тестирование Centrifugo
 
@@ -355,7 +357,7 @@ https://github.com/centrifugal/centrifugo/blob/master/misc/benchmarking/k6/readm
 https://github.com/centrifugal/centrifuge/tree/master/_examples/ws_benchmarks/benchmark_gobwas
 https://github.com/centrifugal/centrifuge/tree/master/_examples/ws_benchmarks/benchmark_gorilla
 
-***
+---
 
 ## Setup Hasura
 
@@ -430,12 +432,12 @@ $ npm install -g @apollo/rover
 $ rover graph introspect --header "X-Hasura-Admin-Secret: myadminsecretkey" http://localhost:8080/v1/graphql > schema.graphql
 ```
 
-***
+---
 
-## Соглашения 
+## Соглашения
 
 - Таблицы именуются во множественном числе.
-- Переименования в metadata для соответствия GraphQL-типов. 
+- Переименования в metadata для соответствия GraphQL-типов.
 - Таблицы и колонки именуются через подчёркивание (в Python-стиле).
 - Data Manager > Edit > GraphQL Customization > Naming Conversion > graphql-default
 - Поля id, created_by, updated_by в начале каждой таблицы сущности.
@@ -446,21 +448,26 @@ $ rover graph introspect --header "X-Hasura-Admin-Secret: myadminsecretkey" http
 ## Схема БД
 
 - members
+
   - id
   - name
 
 - rooms
+
   - id
   - name
   - kind
+
   * messages
 
 - messages
+
   - id
   - room_id
   - member_id
   - text
   - is_read
+
   * member
 
 - room_members
@@ -482,7 +489,7 @@ HASURA_GRAPHQL_JWT_SECRET: '{ "type": "HS256", "key": "30b50d8699c8b71ea291f4538
   "admin": true,
   "iat": 1516239022,
   "https://hasura.io/jwt/claims": {
-    "x-hasura-allowed-roles": ["editor","user", "mod"],
+    "x-hasura-allowed-roles": ["editor", "user", "mod"],
     "x-hasura-default-role": "user",
     "x-hasura-user-id": "1",
     "x-hasura-org-id": "123",
@@ -493,7 +500,7 @@ HASURA_GRAPHQL_JWT_SECRET: '{ "type": "HS256", "key": "30b50d8699c8b71ea291f4538
 
 Authorization Bearer <JWT>
 
-***
+---
 
 Какие есть инструменты для организации нагрузочного тестирования GraphQL Subscriptions?
 
@@ -515,7 +522,6 @@ Authorization Bearer <JWT>
 - https://github.com/YugabyteDB-Samples/yugabyte-graphql-apps/tree/master/graphql-subscription-with-yugabytedb/graphql-subscription-perf-tool
 - https://github.com/eranyanay/1m-go-websockets
 
-
 ## Why EntGo?
 
 ...
@@ -528,9 +534,10 @@ Authorization Bearer <JWT>
 
 Прежде чем мы продолжим, вы должны взглянуть на отличный фреймворк entgo и его архитектуру. Даже если вы не собираетесь использовать Golang для построения слоя вашего API, вы можете увидеть, сколько мысли и опыта вложено в дизайн фреймворка. Вместо того чтобы разбрасывать логику авторизации по вашим резолверам, вы можете определить политики на уровне данных, и нет никакого способа обойти их. Политика доступа является частью модели данных. Вам не обязательно использовать фреймворк, как entgo, но имейте в виду, что тогда вам придется решить эту сложную проблему самостоятельно.
 
-***
+---
 
 Клавиатурная болезнь:
+
 - База 61
 - Кепки 28
 - Свичи 56
@@ -543,12 +550,12 @@ Authorization Bearer <JWT>
 - Пинцет 1
 - Съёмник 2
 - Магнитные разъемы 2
-Итого: 279
+  Итого: 279
 
-***
+---
 
 > Interested to understand how does this compares and relates to https://github.com/99designs/gqlgen. Especially in the area of type system, is this reflection based, materialized types?
-	
+
 jensneuse on March 2, 2022:
 
 gqlgen allows you to write GraphQL Servers with resolvers, etc. graphql-go-tools implements not just the GraphQL specification but also comes with a GraphQL engine that is "thunk-based". What this means is that you don't "implement" resolvers, you configure them. We then have a Query Planner, similar to a SQL database, that can make a stateless execution plan for a given GraphQL query. This plan can be cached and then executed, making it very efficient.
@@ -561,20 +568,21 @@ We're using the engine in WunderGraph to make it easy to configure and use: http
 
 What problem does it solve? Using this engine, you can talk to multiple heterogenous systems as if they are one single GraphQL API, even though their sub protocols are different.
 
-***
+---
 
 как организовать подписки GraphQL через директивы @defer & @stream & @live
 
 https://the-guild.dev/graphql/yoga-server/docs/features/defer-stream
 https://www.apollographql.com/blog/new-features-in-graphql-batch-defer-stream-live-and-subscribe
 
-***
+---
 
 ## Experimental GraphQL Playground
 
 https://codesandbox.io/p/sandbox/graphql-live-query-nuq4v
 
 Features:
+
 - Query (HTTP, HTTP-Multipart, WebSocket)
 - Mutation (HTTP, HTTP-Multipart, WebSocket)
 - Query with @defer (HTTP-Multipart, WebSocket)
@@ -597,7 +605,7 @@ and powered by the following libraries:
 - SSE-Z - Simple SSE wrapper
 - graphql-live-query - GraphQL live queries for any GraphQL schema
 
-***
+---
 
 ## GraphQL Subscribe via SSE
 
@@ -615,7 +623,7 @@ curl -N --request POST --url https://localhost:8888/api \
 --verbose
 ```
 
-***
+---
 
 ---
 
