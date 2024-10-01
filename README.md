@@ -130,6 +130,7 @@
 - [ ] [A dream of scalable and enriched GraphQL subscriptions](https://medium.com/pipedrive-engineering/a-dream-of-scalable-and-enriched-graphql-subscriptions-724284448e65)
 - [ ] gomock by uber
 - [ ] https://github.com/sourcegraph/conc/
+- [ ] https://jqlang.github.io/jq/ - для анализа JSON
 
 ## Реализация
 
