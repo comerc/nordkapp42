@@ -131,6 +131,7 @@
 - [ ] gomock by uber
 - [ ] https://github.com/sourcegraph/conc/
 - [ ] https://jqlang.github.io/jq/ - для анализа JSON
+- [ ] https://github.com/onsi/gomega - BDD Framework
 
 ## Реализация
 
